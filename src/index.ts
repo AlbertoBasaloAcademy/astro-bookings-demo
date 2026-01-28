@@ -15,6 +15,7 @@ app.use('/api/rockets', rocketRouter);
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Health endpoint http://localhost:${PORT}/health`);
   });
 }
 
