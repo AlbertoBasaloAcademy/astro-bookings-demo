@@ -1,17 +1,15 @@
 import { CreateRocketInput, Rocket, RocketRange, UpdateRocketInput } from '../types/rocket.js';
-
-const VALID_RANGES: RocketRange[] = ['suborbital', 'orbital', 'moon', 'mars'];
-const MIN_CAPACITY = 1;
-const MAX_CAPACITY = 10;
+import { ValidationError } from '../utils/error-handler.js';
+import { validateRocketInput } from '../utils/validation.js';
 
 export class RocketStore {
   private rockets: Map<string, Rocket> = new Map();
   private nextId: number = 1;
 
   create(input: CreateRocketInput): Rocket {
-    const validation = this.validateInput(input);
-    if (validation.length > 0) {
-      throw { status: 400, errors: validation };
+    const errors = validateRocketInput(input);
+    if (errors.length > 0) {
+      throw new ValidationError(errors);
     }
 
     const id = String(this.nextId++);
@@ -69,14 +67,14 @@ export class RocketStore {
       return undefined;
     }
 
-    const validation = this.validateInput({
+    const validation = validateRocketInput({
       name: input.name ?? rocket.name,
       range: input.range ?? rocket.range,
       capacity: input.capacity ?? rocket.capacity,
     });
 
     if (validation.length > 0) {
-      throw { status: 400, errors: validation };
+      throw new ValidationError(validation);
     }
 
     const updated: Rocket = {
@@ -91,30 +89,6 @@ export class RocketStore {
 
   delete(id: string): boolean {
     return this.rockets.delete(id);
-  }
-
-  private validateInput(input: CreateRocketInput): Array<{ field: string; message: string }> {
-    const errors: Array<{ field: string; message: string }> = [];
-
-    if (!input.name || input.name.trim().length === 0) {
-      errors.push({ field: 'name', message: 'Name is required and cannot be empty' });
-    }
-
-    if (!VALID_RANGES.includes(input.range)) {
-      errors.push({
-        field: 'range',
-        message: `Range must be one of: ${VALID_RANGES.join(', ')}`,
-      });
-    }
-
-    if (!Number.isInteger(input.capacity) || input.capacity < MIN_CAPACITY || input.capacity > MAX_CAPACITY) {
-      errors.push({
-        field: 'capacity',
-        message: `Capacity must be an integer between ${MIN_CAPACITY} and ${MAX_CAPACITY}`,
-      });
-    }
-
-    return errors;
   }
 }
 
