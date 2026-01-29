@@ -60,3 +60,5 @@ npm test           # Run Playwright tests
 - Sacrifice grammar for conciseness in responses.
 - This is a windows environment using git bash terminal.
 - My default branch is `main`.
+- Remote repository, with active issues, is hosted on GitHub :
+  - [AlbertoBasaloAcademy / astro-bookings-demo](https://github.com/AlbertoBasaloAcademy/astro-bookings-demo)
