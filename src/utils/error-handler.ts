@@ -1,5 +1,7 @@
 import { Response } from 'express';
 
+const MIN_INT_PARAM = 1;
+
 export interface ValidationErrorDetail {
   field: string;
   message: string;
@@ -7,9 +9,9 @@ export interface ValidationErrorDetail {
 
 export class AppError extends Error {
   constructor(
-    public statusCode: number,
-    public message: string,
-    public details?: ValidationErrorDetail[]
+    public readonly statusCode: number,
+    message: string,
+    public readonly details?: ValidationErrorDetail[]
   ) {
     super(message);
     this.name = 'AppError';
@@ -36,9 +38,16 @@ export function handleError(error: unknown, res: Response): void {
 }
 
 export function parseIntParam(value: string | undefined, defaultValue: number): number {
-  return Math.max(1, parseInt(value || '', 10) || defaultValue);
+  const parsed = Number.parseInt(value ?? '', 10);
+  const safeValue = Number.isNaN(parsed) ? defaultValue : parsed;
+
+  return Math.max(MIN_INT_PARAM, safeValue);
 }
 
 export function parseStringParam(value: string | string[] | undefined): string | undefined {
-  return Array.isArray(value) ? value[0] : value;
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  return value?.[0];
 }

@@ -7,27 +7,29 @@ const MAX_CAPACITY = 10;
 
 export function validateRocketInput(input: CreateRocketInput): ValidationErrorDetail[] {
   const errors: ValidationErrorDetail[] = [];
+  const addError = (field: string, message: string): void => {
+    errors.push({ field, message });
+  };
 
-  if (!input.name || input.name.trim().length === 0) {
-    errors.push({ field: 'name', message: 'Name is required and cannot be empty' });
+  const trimmedName = input.name?.trim();
+
+  if (!trimmedName) {
+    addError('name', 'Name is required and cannot be empty');
   }
 
   if (!VALID_RANGES.includes(input.range)) {
-    errors.push({
-      field: 'range',
-      message: `Range must be one of: ${VALID_RANGES.join(', ')}`,
-    });
+    addError('range', `Range must be one of: ${VALID_RANGES.join(', ')}`);
   }
 
-  if (
-    !Number.isInteger(input.capacity) ||
-    input.capacity < MIN_CAPACITY ||
-    input.capacity > MAX_CAPACITY
-  ) {
-    errors.push({
-      field: 'capacity',
-      message: `Capacity must be an integer between ${MIN_CAPACITY} and ${MAX_CAPACITY}`,
-    });
+  const { capacity } = input;
+  const isCapacityValid =
+    Number.isInteger(capacity) && capacity >= MIN_CAPACITY && capacity <= MAX_CAPACITY;
+
+  if (!isCapacityValid) {
+    addError(
+      'capacity',
+      `Capacity must be an integer between ${MIN_CAPACITY} and ${MAX_CAPACITY}`
+    );
   }
 
   return errors;
