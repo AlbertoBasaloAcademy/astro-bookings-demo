@@ -2,10 +2,10 @@ import { Response } from 'express';
 
 const MIN_INT_PARAM = 1;
 
-export interface ValidationErrorDetail {
+export type ValidationErrorDetail = {
   field: string;
   message: string;
-}
+};
 
 export class AppError extends Error {
   constructor(
