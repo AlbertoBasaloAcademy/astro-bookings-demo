@@ -13,7 +13,7 @@ This is a demo system for training purposes, not for production use.
 - Database: **In-memory store** (no persistence)
 - Security: **None** (demo only)
 - Testing: **Playwright 1.58**
-- Logging: **Console** (basic)
+- Logging: **Console via logger utility** (info/warn/error/debug)
 
 ### Development workflow
 ```bash
@@ -48,6 +48,7 @@ npm test           # Run Playwright tests
 │   ├── index.ts          # Application entry point
 │   ├── routes/           # Express route handlers
 │   ├── services/         # Business logic and data stores
+│   ├── utils/            # Shared utilities (logger, validation, errors)
 │   └── types/            # TypeScript type definitions
 └── tests/                # Playwright test files
     ├── health.spec.ts    # Health check tests

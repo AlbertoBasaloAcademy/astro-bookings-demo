@@ -23,6 +23,17 @@ A **backend API** for offering bookings for rocket launches.
 - Paginated rocket listings
 - Full data validation and error handling
 
+## Logging
+
+- Logs are written to stdout/stderr with timestamped level tags.
+- Default log level is `info`. Set `LOG_LEVEL=debug` to enable debug output.
+
+### Manual check
+
+1. Start the API with `LOG_LEVEL=debug`.
+2. Create a rocket via `POST /api/rockets`.
+3. Verify a debug log entry like `Rocket created` appears in the console.
+
 > [!WARNING]
 > AstroBookings is a fictional space travel company.
 > The system is designed for demonstration and training purposes. 

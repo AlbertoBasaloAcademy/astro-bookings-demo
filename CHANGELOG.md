@@ -21,6 +21,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated project structure to support modular service architecture
 
+## [1.2.0] - 2026-01-29
+
+### Added
+- Logger utility with leveled output and ISO timestamps
+- `LOG_LEVEL` support to enable debug logging
+- Startup and rocket creation logs using the logger
+- Manual debug logging check in README
+
 ## [1.0.0] - 2026-01-20
 
 ### Added
