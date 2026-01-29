@@ -74,7 +74,7 @@ npm test           # Run Playwright tests
 │   │   ├── rocket.service.ts
 │   │   └── rocketStore.ts
 │   ├── types/            # TypeScript type definitions
-│   │   └── rocket.ts     # Rocket types (using types, not interfaces)
+│   │   └── rocket.ts     # Rocket types and data structures
 │   └── utils/            # Shared utilities
 │       ├── error-handler.ts   # Error handling with custom error types
 │       ├── logger.ts          # Leveled logging utility
@@ -85,7 +85,7 @@ npm test           # Run Playwright tests
 ```
 
 ### Architecture & Coding Standards
-- **Type definitions**: Use `type` instead of `interface` for data structures (per TypeScript instructions)
+- **Type definitions**: Use `type` for data structures, `interface` for class contracts (per TypeScript instructions in .github/instructions/)
 - **File naming**: `kebab-case.{pattern}.ts` (e.g., `rocket.service.ts`, `error-handler.ts`)
 - **Exports**: Prefer named exports over default exports
 - **Error handling**: Custom error classes (`AppError`, `ValidationError`) with structured error responses
