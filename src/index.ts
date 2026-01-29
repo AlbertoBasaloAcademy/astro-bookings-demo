@@ -1,5 +1,6 @@
 import express from 'express';
 import { rocketRouter } from './routes/rocketRoutes.js';
+import { info } from './utils/logger.js';
 
 const app = express();
 const PORT = Number(process.env.PORT ?? 3000);
@@ -14,8 +15,8 @@ app.use('/api/rockets', rocketRouter);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-    console.log(`Health endpoint http://localhost:${PORT}/health`);
+    info(`Server is running on http://localhost:${PORT}`);
+    info(`Health endpoint http://localhost:${PORT}/health`);
   });
 }
 

@@ -1,5 +1,6 @@
 import { CreateRocketInput, Rocket, RocketRange, UpdateRocketInput } from '../types/rocket.js';
 import { ValidationError } from '../utils/error-handler.js';
+import { debug } from '../utils/logger.js';
 import { validateRocketInput } from '../utils/validation.js';
 
 export class RocketStore {
@@ -24,6 +25,12 @@ export class RocketStore {
     };
 
     this.rockets.set(id, rocket);
+    debug('Rocket created', {
+      id,
+      name: rocket.name,
+      range: rocket.range,
+      capacity: rocket.capacity,
+    });
     return rocket;
   }
 
