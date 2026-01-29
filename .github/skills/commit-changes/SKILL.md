@@ -18,3 +18,5 @@ When asked for committing changes, follow these steps:
   - Stage the changes using `git add` for each group of files.
 4. **Commit changes**:
   - Commit the staged changes using [conventional commit messages](./conventional-commits.md) guidelines.
+5. **Merge commits into main**:
+   - If required, merge the commits into the main branch using `git checkout main` and `git merge {branch-name}`.
