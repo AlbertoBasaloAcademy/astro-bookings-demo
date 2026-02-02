@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-02-02
+
+### Added
+- Launches Management API for scheduling rocket launches
+- Launch creation with pricing and passenger threshold configuration
+- RESTful endpoints for managing launches (POST, GET, PUT, DELETE)
+- Launch availability calculation based on rocket capacity
+- Comprehensive validation for launch data
+- Rocket capacity constraint enforcement to prevent overbooking
+- Launch status lifecycle (scheduled, active, completed, cancelled)
+- Integration with rocket service for capacity validation
+- Full error handling with descriptive validation messages
+
 ## [1.1.0] - 2026-01-27
 
 ### Added
