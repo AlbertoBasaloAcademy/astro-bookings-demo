@@ -46,23 +46,9 @@ npm test           # Run Playwright tests
 ├── playwright.config.ts  # Playwright test configuration
 ├── .github/              # GitHub configuration and agent definitions
 │   ├── agents/           # Custom agent definitions
-│   │   ├── coder.md      # Coder agent for implementing features
-│   │   └── dev-ops.md    # DevOps agent for releases and documentation
 │   ├── instructions/     # Code style and pattern instructions
-│   │   └── ts.instructions.md  # TypeScript best practices
 │   ├── prompts/          # Task-specific prompts for agents
-│   │   ├── add-logger.prompt.md
-│   │   ├── clean-ts.prompt.md
-│   │   ├── commit.prompt.md
-│   │   ├── create-agents.prompt.md
-│   │   ├── resolve-issue.prompt.md
-│   │   ├── rockets.code.prompt.md
-│   │   ├── rockets.release.prompt.md
-│   │   └── rockets.spec.prompt.md
 │   └── skills/           # Reusable agent skills
-│       ├── commit-changes/        # Git commit automation
-│       ├── creating-gh-issues/    # GitHub issue creation
-│       └── releasing-version/     # Versioning and changelog
 ├── specs/                # Specification documents
 │   └── rockets.spec.md   # Rocket API specification
 ├── src/                  # Source code

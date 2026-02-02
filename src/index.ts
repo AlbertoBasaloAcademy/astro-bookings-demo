@@ -1,6 +1,6 @@
 import express from 'express';
-import { rocketRouter } from './routes/rocketRoutes.js';
 import { launchRouter } from './routes/launchRoutes.js';
+import { rocketRouter } from './routes/rocketRoutes.js';
 import { info } from './utils/logger.js';
 
 const app = express();
