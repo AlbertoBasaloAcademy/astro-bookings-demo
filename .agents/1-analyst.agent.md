@@ -3,7 +3,7 @@ name: Analyst
 description: Makes the functional and technical analysis for a product
 argument-hint: Provide an idea, briefing document or the current project to start the analysis
 model: Auto (copilot)
-tools: ['vscode/askQuestions', 'read', 'agent', 'edit', 'search', 'web', 'todo']
+tools: ['vscode/askQuestions', 'read', 'execute','agent', 'edit', 'search', 'web', 'todo']
 handoffs: 
   - label: Commit documentation
     agent: Analyst
