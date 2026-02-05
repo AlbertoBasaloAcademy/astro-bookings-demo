@@ -2,8 +2,9 @@
 
 ## Product Overview
 AstroBookings is a backend API for booking rocket launches.
-Rockets have capacity limits, launches track status lifecycle, customers book seats.
-This is a demo system for training purposes, not for production use.
+Rockets have capacity limits and launch status lifecycles.
+Customer booking and payment features are planned.
+This is a demo system for training purposes.
 
 ## Technical Implementation
 
@@ -14,7 +15,7 @@ This is a demo system for training purposes, not for production use.
 - Security: **None** (demo only)
 - Testing: **Playwright 1.58**
 - Logging: **Console via logger utility** (info/warn/error/debug)
-- Version: **1.2.0** (tracked in CHANGELOG.md)
+- Version: **1.3.0** (tracked in CHANGELOG.md)
 
 ### Development workflow
 ```bash
@@ -39,27 +40,32 @@ npm test           # Run Playwright tests
 ```text
 .                         # Project root  
 ├── AGENTS.md             # This file with instructions for AI agents
+├── .agents/              # Agent docs and skills
+│   ├── PRD.md            # Product Requirements Document
+│   ├── ADD.md            # Architectural Design Document
+│   └── skills/           # Agent skills and templates
 ├── README.md             # The main human documentation file
 ├── CHANGELOG.md          # Version history and release notes
 ├── package.json          # Node.js dependencies and scripts
 ├── tsconfig.json         # TypeScript configuration
 ├── playwright.config.ts  # Playwright test configuration
-├── .github/              # GitHub configuration and agent definitions
-│   ├── agents/           # Custom agent definitions
-│   ├── instructions/     # Code style and pattern instructions
-│   ├── prompts/          # Task-specific prompts for agents
-│   └── skills/           # Reusable agent skills
 ├── specs/                # Specification documents
-│   └── rockets.spec.md   # Rocket API specification
+│   ├── rockets.spec.md   # Rocket API specification
+│   └── launches.spec.md  # Launches API specification
 ├── src/                  # Source code
 │   ├── index.ts          # Application entry point
 │   ├── routes/           # Express route handlers
+│   │   ├── launchRoutes.ts
 │   │   └── rocketRoutes.ts
 │   ├── services/         # Business logic and data stores
+│   │   ├── launch.repository.ts
+│   │   ├── launch.service.ts
+│   │   ├── launchStore.ts
 │   │   ├── rocket.repository.ts
 │   │   ├── rocket.service.ts
 │   │   └── rocketStore.ts
 │   ├── types/            # TypeScript type definitions
+│   │   ├── launch.ts     # Launch types and data structures
 │   │   └── rocket.ts     # Rocket types and data structures
 │   └── utils/            # Shared utilities
 │       ├── error-handler.ts   # Error handling with custom error types
