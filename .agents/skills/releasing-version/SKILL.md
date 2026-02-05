@@ -1,8 +1,6 @@
 ---
 name: releasing-version
-description: >  
-  Updates documentation, generates changelogs, and handles versioning.
-  To be used for automating release tasks. 
+description: "Updates documentation, generates changelogs, and handles versioning. To be used for automating release tasks."
 ---
 
 # Releasing Version Skill

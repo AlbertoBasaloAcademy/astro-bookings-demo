@@ -1,8 +1,6 @@
 ---
 name: creating-gh-issues
-description: >
-  Creates a GitHub issue based on a provided specification or context.
-  To be used to create issues for features, bug corrections, or enhancements.
+description: "Creates a GitHub issue based on a provided specification or context.  To be used to create issues for features, bug corrections, or enhancements."
 ---
 
 # Creating GitHub Issues Skill

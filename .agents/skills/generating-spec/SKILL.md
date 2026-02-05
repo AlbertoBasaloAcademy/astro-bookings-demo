@@ -1,8 +1,6 @@
 ---
 name: generating-spec
-description: > 
-  Writes the specification for a feature based on the provided description.
-  To be used to specify a feature
+description: "Writes the specification for a feature based on the provided description. To be used to specify a feature"
 ---
 
 # Generating Specs 

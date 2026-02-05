@@ -1,8 +1,6 @@
 ---
 name : commit-changes
-description : >
-  Commits pending changes.
-  To be used for committing code changes in a git repository.
+description: "Commits pending changes. To be used for committing code changes in a git repository."
 ---
 
 # Committing Changes Skill

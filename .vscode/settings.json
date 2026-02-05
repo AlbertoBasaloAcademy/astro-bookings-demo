@@ -1,5 +1,14 @@
 {
   "window.zoomLevel": 1,
   "workbench.preferredDarkColorTheme": "Default Dark Modern",
-  "workbench.preferredLightColorTheme": "Default Dark Modern"
+  "workbench.preferredLightColorTheme": "Default Dark Modern",
+  "chat.promptFilesLocations": {
+    ".agents/prompts": true
+  },
+  "chat.agentFilesLocations": {
+    ".agents": true
+  },
+  "chat.agentSkillsLocations": {
+    ".agents/skills": true,
+  }
 }
