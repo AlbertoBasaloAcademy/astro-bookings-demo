@@ -1,6 +1,6 @@
 ---
-description: Best practices for TypeScript code style.
-applyTo: '**/*.ts, **/*.tsx'
+name: coding-type-script
+description: "Best practices for clean and maintainable code in TypeScript. To be used for writing TypeScript code that is easy to read, maintain, and follows industry standards."
 ---
 # Clean code best practices 
 
