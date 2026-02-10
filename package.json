@@ -9,6 +9,9 @@
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
     "test": "playwright test",
+    "test:dev": "vitest watch",
+    "test:unit": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "clean": "rm -rf dist"
   },
   "keywords": [],
@@ -21,7 +24,9 @@
     "@playwright/test": "^1.58.0",
     "@types/express": "^5.0.0",
     "@types/node": "^22.0.0",
+    "@vitest/coverage-v8": "^4.0.18",
     "tsx": "^4.7.0",
-    "typescript": "^5.6.0"
+    "typescript": "^5.6.0",
+    "vitest": "^4.0.18"
   }
 }
