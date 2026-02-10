@@ -13,7 +13,7 @@ This is a demo system for training purposes.
 - Framework: **Express 4.21**
 - Database: **In-memory store** (no persistence)
 - Security: **None** (demo only)
-- Testing: **Playwright 1.58**
+- Testing: **Playwright 1.58** (E2E), **Vitest 4.0** (unit)
 - Logging: **Console via logger utility** (info/warn/error/debug)
 - Version: **1.3.0** (tracked in CHANGELOG.md)
 
@@ -30,7 +30,10 @@ npm run dev        # Development mode with watch
 npm start          # Production mode
 
 # Test the project
-npm test           # Run Playwright tests
+npm test           # Run Playwright E2E tests
+npm run test:dev   # Run unit tests in watch mode
+npm run test:unit  # Run all unit tests once
+npm run test:coverage  # Generate unit test coverage report
 
 # Deploy the project
 # No deployment configured - demo only

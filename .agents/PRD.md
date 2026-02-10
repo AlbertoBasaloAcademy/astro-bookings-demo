@@ -69,6 +69,6 @@ All user inputs are validated with custom validation utilities that check data t
 The system implements structured logging with configurable log levels (info, warn, error, debug) controlled via LOG_LEVEL environment variable. All operations log significant events including entity creation, updates, deletions, validation failures, and system errors. Logs include ISO timestamps and contextual information for debugging and monitoring.
 - **Status**: Implemented
 
-### TR5: Automated Testing with Playwright
-End-to-end acceptance tests validate all acceptance criteria using Playwright 1.58. Tests cover happy paths, validation errors, edge cases, and business rule enforcement. The test suite validates HTTP endpoints, response formats, status codes, and error messages with comprehensive assertions for data integrity.
+### TR5: Automated Testing with Playwright and Vitest
+End-to-end acceptance tests validate all acceptance criteria using Playwright 1.58. Tests cover happy paths, validation errors, edge cases, and business rule enforcement. The test suite validates HTTP endpoints, response formats, status codes, and error messages with comprehensive assertions for data integrity. Unit tests validate business logic in services and utilities using Vitest with mocked dependencies for isolated testing.
 - **Status**: Implemented
