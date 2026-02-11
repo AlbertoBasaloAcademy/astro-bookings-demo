@@ -1,5 +1,5 @@
 ---
-name: unit-testing
+name: testing-unit-vitest
 description: "Writes and maintains unit tests using Vitest. To be used for testing business logic in services and utilities."
 ---
 
