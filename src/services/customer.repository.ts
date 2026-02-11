@@ -1,9 +1,7 @@
 import type {
-    CreateCustomerInput,
     Customer,
     CustomerQueryOptions,
-    PaginatedResponse,
-    UpdateCustomerInput,
+    PaginatedResponse
 } from '../types/customer.js';
 import { normalizeEmail } from '../utils/validation.js';
 

@@ -1,9 +1,9 @@
 import type {
-    CreateCustomerInput,
-    Customer,
-    CustomerQueryOptions,
-    PaginatedResponse,
-    UpdateCustomerInput,
+  CreateCustomerInput,
+  Customer,
+  CustomerQueryOptions,
+  PaginatedResponse,
+  UpdateCustomerInput,
 } from '../types/customer.js';
 import { ValidationError } from '../utils/error-handler.js';
 import { debug } from '../utils/logger.js';
