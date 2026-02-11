@@ -5,50 +5,51 @@ import type {
     PaginatedResponse,
     UpdateCustomerInput,
 } from '../types/customer.js';
-import { ValidationError } from '../utils/error-handler.js';
-import { customerStore } from './customerStore.js';
+import { normalizeEmail } from '../utils/validation.js';
 
 export interface CustomerRepository {
-  create(input: CreateCustomerInput): Customer;
+  save(customer: Customer): void;
   findById(id: string): Customer | undefined;
   findByEmail(email: string): Customer | undefined;
   findAll(options?: CustomerQueryOptions): PaginatedResponse<Customer>;
-  update(id: string, updates: UpdateCustomerInput): Customer | undefined;
+  update(customer: Customer): void;
   deleteById(id: string): boolean;
 }
 
 export class InMemoryCustomerRepository implements CustomerRepository {
-  create(input: CreateCustomerInput): Customer {
-    const created = customerStore.add(input);
-    if (!created) {
-      throw new ValidationError([{ field: 'email', message: 'Email must be unique' }]);
-    }
+  private customers: Map<string, Customer> = new Map();
+  private emailIndex: Map<string, string> = new Map();
+  private nextId = 1;
 
-    return created;
+  save(customer: Customer): void {
+    this.customers.set(customer.id, customer);
+    this.emailIndex.set(normalizeEmail(customer.email), customer.id);
   }
 
   findById(id: string): Customer | undefined {
-    return customerStore.getById(id);
+    return this.customers.get(id);
   }
 
   findByEmail(email: string): Customer | undefined {
-    return customerStore.getByEmail(email);
+    const normalizedEmail = normalizeEmail(email);
+    const customerId = this.emailIndex.get(normalizedEmail);
+    return customerId ? this.customers.get(customerId) : undefined;
   }
 
   findAll(options: CustomerQueryOptions = {}): PaginatedResponse<Customer> {
     const page = options.page ?? 1;
     const pageSize = options.pageSize ?? 10;
-    const normalizedEmail = options.email?.trim().toLowerCase();
-    const normalizedName = options.name?.trim().toLowerCase();
+    const emailFilter = options.email ? normalizeEmail(options.email) : undefined;
+    const nameFilter = options.name?.trim().toLowerCase();
 
-    let results = customerStore.getAll();
+    let results = Array.from(this.customers.values());
 
-    if (normalizedEmail) {
-      results = results.filter((customer) => customer.email.toLowerCase() === normalizedEmail);
+    if (emailFilter) {
+      results = results.filter((customer) => normalizeEmail(customer.email) === emailFilter);
     }
 
-    if (normalizedName) {
-      results = results.filter((customer) => customer.name.toLowerCase().includes(normalizedName));
+    if (nameFilter) {
+      results = results.filter((customer) => customer.name.toLowerCase().includes(nameFilter));
     }
 
     const total = results.length;
@@ -65,12 +66,22 @@ export class InMemoryCustomerRepository implements CustomerRepository {
     };
   }
 
-  update(id: string, updates: UpdateCustomerInput): Customer | undefined {
-    return customerStore.update(id, updates);
+  update(customer: Customer): void {
+    this.customers.set(customer.id, customer);
   }
 
   deleteById(id: string): boolean {
-    return customerStore.delete(id);
+    const customer = this.customers.get(id);
+    if (!customer) {
+      return false;
+    }
+
+    this.emailIndex.delete(normalizeEmail(customer.email));
+    return this.customers.delete(id);
+  }
+
+  generateId(): string {
+    return String(this.nextId++);
   }
 }
 

@@ -6,12 +6,8 @@ import type {
     UpdateCustomerInput,
 } from '../types/customer.js';
 import { ValidationError } from '../utils/error-handler.js';
-import { info } from '../utils/logger.js';
-import {
-    validateCustomerInput,
-    validateCustomerUpdateInput,
-    validateEmailUniqueness,
-} from '../utils/validation.js';
+import { debug } from '../utils/logger.js';
+import { validateCustomerInput, validateCustomerUpdateInput } from '../utils/validation.js';
 import type { CustomerRepository } from './customer.repository.js';
 import { customerRepository } from './customer.repository.js';
 
@@ -20,17 +16,25 @@ export class CustomerService {
 
   create(input: CreateCustomerInput): Customer {
     const errors = validateCustomerInput(input);
-    const uniqueErrors = validateEmailUniqueness(input.email, (email) =>
-      this.repository.findByEmail(email)
-    );
-
-    const allErrors = [...errors, ...uniqueErrors];
-    if (allErrors.length > 0) {
-      throw new ValidationError(allErrors);
+    if (errors.length > 0) {
+      throw new ValidationError(errors);
     }
 
-    const customer = this.repository.create(input);
-    info('Customer created', { id: customer.id, email: customer.email });
+    const existingCustomer = this.repository.findByEmail(input.email);
+    if (existingCustomer) {
+      throw new ValidationError([{ field: 'email', message: 'Email must be unique' }]);
+    }
+
+    const now = new Date();
+    const customer: Customer = {
+      id: (this.repository as any).generateId(),
+      ...input,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    this.repository.save(customer);
+    debug('Customer created', { id: customer.id, email: customer.email });
     return customer;
   }
 
@@ -52,18 +56,31 @@ export class CustomerService {
       throw new ValidationError(errors);
     }
 
-    const updated = this.repository.update(id, input);
-    if (updated) {
-      info('Customer updated', { id: updated.id });
+    const existing = this.repository.findById(id);
+    if (!existing) {
+      return undefined;
     }
 
+    const updated: Customer = {
+      ...existing,
+      ...input,
+      updatedAt: new Date(),
+    };
+
+    this.repository.update(updated);
+    debug('Customer updated', { id: updated.id, email: updated.email });
     return updated;
   }
 
   delete(id: string): boolean {
+    const customer = this.repository.findById(id);
+    if (!customer) {
+      return false;
+    }
+
     const deleted = this.repository.deleteById(id);
     if (deleted) {
-      info('Customer deleted', { id });
+      debug('Customer deleted', { id, email: customer.email });
     }
 
     return deleted;

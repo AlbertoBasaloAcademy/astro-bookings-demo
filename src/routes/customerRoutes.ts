@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { customerService } from '../services/customer.service.js';
 import type { CreateCustomerInput, UpdateCustomerInput } from '../types/customer.js';
-import { handleError, parseIntParam, parseStringParam } from '../utils/error-handler.js';
+import { handleError, parsePaginationParams, parseStringParam } from '../utils/error-handler.js';
 
 export const customerRouter = Router();
 
@@ -52,8 +52,7 @@ customerRouter.get('/:id', (req: Request, res: Response) => {
 
 // GET /api/customers - List customers with pagination
 customerRouter.get('/', (req: Request, res: Response) => {
-  const page = parseIntParam(req.query.page as string, 1);
-  const pageSize = Math.min(100, parseIntParam(req.query.pageSize as string, 10));
+  const { page, pageSize } = parsePaginationParams(req.query.page as string, req.query.pageSize as string);
   const name = parseStringParam(req.query.name as string | string[] | undefined);
   const email = parseStringParam(req.query.email as string | string[] | undefined);
 

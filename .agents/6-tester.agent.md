@@ -5,9 +5,9 @@ argument-hint: Provide the issue number or specification file to start testing
 model: Auto (copilot)
 tools: ['vscode', 'execute', 'read', 'edit', 'search', 'web', 'github/*', 'agent', 'todo']
 handoffs: 
-  - label: Document and Release
-    agent: DevOps
-    prompt: write documentation and release the implementation
+  - label: Clean
+    agent: Cleaner
+    prompt: clean up the implementation
     send: true
 ---
 # Tester

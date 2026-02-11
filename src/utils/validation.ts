@@ -6,6 +6,10 @@ const VALID_RANGES: RocketRange[] = ['suborbital', 'orbital', 'moon', 'mars'] as
 const MIN_CAPACITY = 1;
 const MAX_CAPACITY = 10;
 
+export function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
 export function validateRocketInput(input: CreateRocketInput): ValidationErrorDetail[] {
   const errors: ValidationErrorDetail[] = [];
   const addError = (field: string, message: string): void => {
@@ -48,45 +52,44 @@ const CUSTOMER_NAME_REGEX = /^[A-Za-z][A-Za-z '\-]*[A-Za-z]$/;
 const CUSTOMER_EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const CUSTOMER_PHONE_REGEX = /^\+[1-9]\d{1,14}$/;
 
-type EmailLookup = (email: string) => { id: string } | undefined;
+function validateName(name: string | undefined, errors: ValidationErrorDetail[]): void {
+  const trimmedName = name?.trim();
+  
+  if (!trimmedName) {
+    errors.push({ field: 'name', message: 'Name is required and cannot be empty' });
+  } else if (trimmedName.length < CUSTOMER_NAME_MIN_LENGTH || trimmedName.length > CUSTOMER_NAME_MAX_LENGTH) {
+    errors.push({
+      field: 'name',
+      message: `Name must be between ${CUSTOMER_NAME_MIN_LENGTH} and ${CUSTOMER_NAME_MAX_LENGTH} characters`
+    });
+  } else if (!CUSTOMER_NAME_REGEX.test(trimmedName)) {
+    errors.push({ field: 'name', message: 'Name contains invalid characters' });
+  }
+}
 
-function addCustomerError(
-  errors: ValidationErrorDetail[],
-  field: string,
-  message: string
-): void {
-  errors.push({ field, message });
+function validatePhone(phone: string | undefined, errors: ValidationErrorDetail[]): void {
+  const trimmedPhone = phone?.trim();
+  
+  if (!trimmedPhone) {
+    errors.push({ field: 'phone', message: 'Phone is required and cannot be empty' });
+  } else if (!CUSTOMER_PHONE_REGEX.test(trimmedPhone)) {
+    errors.push({ field: 'phone', message: 'Phone format is invalid' });
+  }
 }
 
 export function validateCustomerInput(input: CreateCustomerInput): ValidationErrorDetail[] {
   const errors: ValidationErrorDetail[] = [];
-  const name = input.name?.trim();
   const email = input.email?.trim();
-  const phone = input.phone?.trim();
 
-  if (!name) {
-    addCustomerError(errors, 'name', 'Name is required and cannot be empty');
-  } else if (name.length < CUSTOMER_NAME_MIN_LENGTH || name.length > CUSTOMER_NAME_MAX_LENGTH) {
-    addCustomerError(
-      errors,
-      'name',
-      `Name must be between ${CUSTOMER_NAME_MIN_LENGTH} and ${CUSTOMER_NAME_MAX_LENGTH} characters`
-    );
-  } else if (!CUSTOMER_NAME_REGEX.test(name)) {
-    addCustomerError(errors, 'name', 'Name contains invalid characters');
-  }
+  validateName(input.name, errors);
 
   if (!email) {
-    addCustomerError(errors, 'email', 'Email is required and cannot be empty');
+    errors.push({ field: 'email', message: 'Email is required and cannot be empty' });
   } else if (!CUSTOMER_EMAIL_REGEX.test(email)) {
-    addCustomerError(errors, 'email', 'Email format is invalid');
+    errors.push({ field: 'email', message: 'Email format is invalid' });
   }
 
-  if (!phone) {
-    addCustomerError(errors, 'phone', 'Phone is required and cannot be empty');
-  } else if (!CUSTOMER_PHONE_REGEX.test(phone)) {
-    addCustomerError(errors, 'phone', 'Phone format is invalid');
-  }
+  validatePhone(input.phone, errors);
 
   return errors;
 }
@@ -97,47 +100,15 @@ export function validateCustomerUpdateInput(
   const errors: ValidationErrorDetail[] = [];
 
   if (input.email !== undefined) {
-    addCustomerError(errors, 'email', 'Email cannot be updated');
+    errors.push({ field: 'email', message: 'Email cannot be updated' });
   }
 
   if (input.name !== undefined) {
-    const name = input.name.trim();
-    if (!name) {
-      addCustomerError(errors, 'name', 'Name is required and cannot be empty');
-    } else if (name.length < CUSTOMER_NAME_MIN_LENGTH || name.length > CUSTOMER_NAME_MAX_LENGTH) {
-      addCustomerError(
-        errors,
-        'name',
-        `Name must be between ${CUSTOMER_NAME_MIN_LENGTH} and ${CUSTOMER_NAME_MAX_LENGTH} characters`
-      );
-    } else if (!CUSTOMER_NAME_REGEX.test(name)) {
-      addCustomerError(errors, 'name', 'Name contains invalid characters');
-    }
+    validateName(input.name, errors);
   }
 
   if (input.phone !== undefined) {
-    const phone = input.phone.trim();
-    if (!phone) {
-      addCustomerError(errors, 'phone', 'Phone is required and cannot be empty');
-    } else if (!CUSTOMER_PHONE_REGEX.test(phone)) {
-      addCustomerError(errors, 'phone', 'Phone format is invalid');
-    }
-  }
-
-  return errors;
-}
-
-export function validateEmailUniqueness(
-  email: string,
-  lookup: EmailLookup,
-  currentId?: string
-): ValidationErrorDetail[] {
-  const errors: ValidationErrorDetail[] = [];
-  const normalized = email.trim().toLowerCase();
-  const existing = lookup(normalized);
-
-  if (existing && existing.id !== currentId) {
-    addCustomerError(errors, 'email', 'Email must be unique');
+    validatePhone(input.phone, errors);
   }
 
   return errors;
