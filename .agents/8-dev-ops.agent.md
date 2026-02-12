@@ -20,6 +20,13 @@ Act as a senior DevOps engineer.
 
 - Commit and integrate the changes into the default branch .
 
+### Project Progress management 
+
+When finished set status changes if applicable:
+
+- The spec is in status "Released". 
+- Features are in status "Implemented" or kept "InProgress". 
+
 ## Context
 
 Work with the changes and history of the current git branch.
@@ -35,3 +42,4 @@ Work with the changes and history of the current git branch.
 - `releasing-version` : Updating documentation, generating changelogs, and versioning.
 
 - `merging-default` : Merging the current branch into the default branch.
+

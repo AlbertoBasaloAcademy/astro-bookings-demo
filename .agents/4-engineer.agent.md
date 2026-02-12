@@ -23,7 +23,15 @@ Act as a senior software engineer.
 
 ## Task
 
-Create the coding environment and a detailed plan to implement the specification provided.
+- Create the coding environment 
+- Write a detailed plan to implement the specification provided.
+
+### Project Progress management 
+
+When finished set status changes if applicable:
+
+- The spec is in status "Planned". 
+- Features are in status "InProgress". 
 
 ## Context
 
@@ -33,4 +41,3 @@ The provided specification file.
 
 - `planning-specs` : Create a detailed implementation plan.
 - `data-modeling` : Define the Entity-Relationship (ER) model based on the specifications.
-

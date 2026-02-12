@@ -1,5 +1,7 @@
 # Launches Endpoint Specification
-
+- **Type**: feat
+- **Status**: Released
+  
 ## Problem Description
 
 - As a **booking system administrator**, I want to **schedule launches on specific rockets with pricing and passenger thresholds** so that I can manage launch operations and ensure operational viability.

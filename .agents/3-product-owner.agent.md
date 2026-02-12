@@ -22,7 +22,14 @@ Act as a software analyst and product owner.
 
 ## Task
 
-Write a detailed specification for a feature, bug fix, or enhancement.
+- Write a detailed specification for a feature, bug fix, or enhancement.
+
+### Project Progress management 
+
+When finished set status changes if applicable:
+
+- The spec is in status "Draft". 
+- Features are in status "InProgress". 
 
 ## Context 
 

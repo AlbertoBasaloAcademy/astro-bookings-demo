@@ -28,6 +28,13 @@ Act as a senior software developer and quality assurance engineer.
 
 - Commit the changes with a clear message summarizing the completed tests.
 
+### Project Progress management 
+
+When finished set status changes if applicable:
+
+- The spec is in status "Verified". 
+- Features are in status "InProgress". 
+
 ## Context
 
 Your testing task is defined in one of three ways:
@@ -41,5 +48,3 @@ If not provided explicitly, ask for them before proceeding.
 ### Skills to use
 
 - `testing-e2e-playwright` — Writes end-to-end tests with Playwright following the layered architecture patterns
-
-

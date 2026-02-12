@@ -37,7 +37,7 @@ Administrators can schedule launches for specific rockets with configurable pric
 
 ### FR3: Customer Registration and Profile Management
 Customers are identified by unique email addresses and maintain profiles with name and phone number. The system validates email uniqueness and format, stores customer contact information, and allows profile updates. Multiple bookings per customer are supported with full booking history tracking.
-- **Status**: NotStarted
+- **Status**: Implemented
 
 ### FR4: Seat Booking and Reservation
 Customers can book single or multiple seats on scheduled launches based on available inventory. The system validates seat availability in real-time, prevents overbooking beyond rocket capacity, calculates total booking cost based on seat quantity and launch pricing, and confirms bookings atomically or rolls back on failure.

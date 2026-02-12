@@ -1,6 +1,6 @@
 # Customer Management API Specification
 - **Type**: feat
-- **Status**: Planned
+- **Status**: Released
 
 ## Problem Description
 

@@ -16,10 +16,10 @@
 
 ### {FR1} Functional requirement 1 short description
 - {One short paragraph description of the functional requirement.}
-- **Status**: NotStarted/InProgress/Implemented
+- **Status**: NotStarted{NotStarted/InProgress/Implemented}
 
 ## Technical Requirements
 
 ### {TR1} Technical requirement 1 short description
 - {One short paragraph description of the technical requirement}
-- **Status**: NotStarted/InProgress/Implemented
+- **Status**: NotStarted{NotStarted/InProgress/Implemented}

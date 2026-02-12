@@ -33,6 +33,13 @@ Act as a senior software developer.
 
 - Do not write e2e verification tests or documentation at this stage.
 
+### Project Progress management 
+
+When finished set status changes if applicable:
+
+- The spec is in status "Coded". 
+- Features are in status "InProgress". 
+
 ## Context
 
 Your task may be defined in a plan file.

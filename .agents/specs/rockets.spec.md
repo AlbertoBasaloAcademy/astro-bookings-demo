@@ -1,4 +1,6 @@
 # Rocket Management API Specification
+- **Type**: feat
+- **Status**: Released
 
 ## Problem Description
 
