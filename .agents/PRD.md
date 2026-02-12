@@ -41,7 +41,7 @@ Customers are identified by unique email addresses and maintain profiles with na
 
 ### FR4: Seat Booking and Reservation
 Customers can book single or multiple seats on scheduled launches based on available inventory. The system validates seat availability in real-time, prevents overbooking beyond rocket capacity, calculates total booking cost based on seat quantity and launch pricing, and confirms bookings atomically or rolls back on failure.
-- **Status**: Coded
+- **Status**: Implemented
 
 ### FR5: Payment Processing
 Customers are billed upon successful booking through a mock payment gateway. The system generates payment records with booking references, processes payments with success/failure handling, and prevents booking confirmation until payment succeeds. Payment status is tracked for each booking transaction.
