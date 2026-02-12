@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-02-12
+
+### Added
+- Seat Booking and Reservation API for customers to reserve seats on launches
+- Atomic booking operations ensuring data consistency and preventing overbooking
+- Real-time seat availability calculation based on bookings and rocket capacity
+- Booking creation with automatic cost calculation (seats × launch price)
+- Booking status tracking (pending, confirmed, cancelled)
+- Payment status tracking for future payment processing (pending, completed, failed)
+- Customer booking history retrieval with complete details
+- Launch availability endpoint for checking remaining seat capacity
+- Booking repository with filtering by launch, customer, and booking ID
+- Comprehensive validation for booking inputs (email format, seat count, launch status)
+- Test utilities extracted for reusability across E2E test suites
+- 15 comprehensive E2E tests covering all booking acceptance criteria
+- Full integration with existing customer, launch, and rocket management systems
+
+### Changed
+- Consolidated availability calculations across service and route layers
+- Refactored booking service with extracted helper methods for dependent data lookup
+- Improved error messages with specific details for missing data scenarios
+- Updated launch routes to use actual booking data instead of hardcoded placeholders
+- Standardized parameter parsing across all booking route handlers
+
 ## [1.4.0] - 2026-02-12
 
 ### Added
