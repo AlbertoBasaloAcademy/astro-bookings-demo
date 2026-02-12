@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-02-12
+
+### Added
+- Customer Management API for registering and managing customers
+- Customer profile creation with unique email validation
+- RESTful endpoints for customer CRUD operations (POST, GET, PUT, DELETE)
+- Customer lookup by ID and email address
+- Comprehensive validation for email format and uniqueness
+- Phone number validation with international format support
+- Customer profile update with immutable email field protection
+- Pagination support for customer listings
+- Full e2e test coverage for all customer management acceptance criteria
+- Structured error handling with field-level validation messages
+
 ## [1.3.0] - 2026-02-02
 
 ### Added

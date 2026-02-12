@@ -15,7 +15,7 @@ This is a demo system for training purposes.
 - Security: **None** (demo only)
 - Testing: **Playwright 1.58** (E2E), **Vitest 4.0** (unit)
 - Logging: **Console via logger utility** (info/warn/error/debug)
-- Version: **1.3.0** (tracked in CHANGELOG.md)
+- Version: **1.4.0** (tracked in CHANGELOG.md)
 
 ### Development workflow
 ```bash
@@ -58,9 +58,13 @@ npm run test:coverage  # Generate unit test coverage report
 ├── src/                  # Source code
 │   ├── index.ts          # Application entry point
 │   ├── routes/           # Express route handlers
+│   │   ├── customerRoutes.ts
 │   │   ├── launchRoutes.ts
 │   │   └── rocketRoutes.ts
 │   ├── services/         # Business logic and data stores
+│   │   ├── customer.repository.ts
+│   │   ├── customer.service.ts
+│   │   ├── customerStore.ts
 │   │   ├── launch.repository.ts
 │   │   ├── launch.service.ts
 │   │   ├── launchStore.ts
@@ -68,6 +72,7 @@ npm run test:coverage  # Generate unit test coverage report
 │   │   ├── rocket.service.ts
 │   │   └── rocketStore.ts
 │   ├── types/            # TypeScript type definitions
+│   │   ├── customer.ts   # Customer types and data structures
 │   │   ├── launch.ts     # Launch types and data structures
 │   │   └── rocket.ts     # Rocket types and data structures
 │   └── utils/            # Shared utilities
@@ -75,7 +80,9 @@ npm run test:coverage  # Generate unit test coverage report
 │       ├── logger.ts          # Leveled logging utility
 │       └── validation.ts      # Input validation helpers
 └── tests/                # Playwright test files
+    ├── customers.spec.ts # Customer API tests
     ├── health.spec.ts    # Health check tests
+    ├── launches.spec.ts  # Launch API tests
     └── rockets.spec.ts   # Rocket API tests
 ```
 
