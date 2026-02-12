@@ -1,10 +1,16 @@
 import { Response } from 'express';
 
 const MIN_INT_PARAM = 1;
+const MAX_PAGE_SIZE = 100;
 
 export type ValidationErrorDetail = {
   field: string;
   message: string;
+};
+
+export type PaginationParams = {
+  page: number;
+  pageSize: number;
 };
 
 export class AppError extends Error {
@@ -50,4 +56,14 @@ export function parseStringParam(value: string | string[] | undefined): string |
   }
 
   return value?.[0];
+}
+
+export function parsePaginationParams(
+  pageParam: string | undefined,
+  pageSizeParam: string | undefined
+): PaginationParams {
+  const page = parseIntParam(pageParam, 1);
+  const pageSize = Math.min(MAX_PAGE_SIZE, parseIntParam(pageSizeParam, 10));
+
+  return { page, pageSize };
 }

@@ -1,4 +1,5 @@
 import express from 'express';
+import { customerRouter } from './routes/customerRoutes.js';
 import { launchRouter } from './routes/launchRoutes.js';
 import { rocketRouter } from './routes/rocketRoutes.js';
 import { info } from './utils/logger.js';
@@ -14,6 +15,7 @@ app.get('/health', (req, res) => {
 
 app.use('/api/rockets', rocketRouter);
 app.use('/api/launches', launchRouter);
+app.use('/api/customers', customerRouter);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {

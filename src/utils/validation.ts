@@ -1,9 +1,14 @@
+import { CreateCustomerInput, UpdateCustomerInput } from '../types/customer.js';
 import { CreateRocketInput, RocketRange } from '../types/rocket.js';
 import { ValidationErrorDetail } from './error-handler.js';
 
 const VALID_RANGES: RocketRange[] = ['suborbital', 'orbital', 'moon', 'mars'] as const;
 const MIN_CAPACITY = 1;
 const MAX_CAPACITY = 10;
+
+export function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
 
 export function validateRocketInput(input: CreateRocketInput): ValidationErrorDetail[] {
   const errors: ValidationErrorDetail[] = [];
@@ -39,4 +44,80 @@ export const ROCKET_STORE_CONSTANTS = {
   VALID_RANGES,
   MIN_CAPACITY,
   MAX_CAPACITY,
+};
+
+const CUSTOMER_NAME_MIN_LENGTH = 2;
+const CUSTOMER_NAME_MAX_LENGTH = 60;
+const CUSTOMER_NAME_REGEX = /^[A-Za-z][A-Za-z '\-]*[A-Za-z]$/;
+const CUSTOMER_EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const CUSTOMER_PHONE_REGEX = /^\+[1-9]\d{1,14}$/;
+
+function validateName(name: string | undefined, errors: ValidationErrorDetail[]): void {
+  const trimmedName = name?.trim();
+  
+  if (!trimmedName) {
+    errors.push({ field: 'name', message: 'Name is required and cannot be empty' });
+  } else if (trimmedName.length < CUSTOMER_NAME_MIN_LENGTH || trimmedName.length > CUSTOMER_NAME_MAX_LENGTH) {
+    errors.push({
+      field: 'name',
+      message: `Name must be between ${CUSTOMER_NAME_MIN_LENGTH} and ${CUSTOMER_NAME_MAX_LENGTH} characters`
+    });
+  } else if (!CUSTOMER_NAME_REGEX.test(trimmedName)) {
+    errors.push({ field: 'name', message: 'Name contains invalid characters' });
+  }
+}
+
+function validatePhone(phone: string | undefined, errors: ValidationErrorDetail[]): void {
+  const trimmedPhone = phone?.trim();
+  
+  if (!trimmedPhone) {
+    errors.push({ field: 'phone', message: 'Phone is required and cannot be empty' });
+  } else if (!CUSTOMER_PHONE_REGEX.test(trimmedPhone)) {
+    errors.push({ field: 'phone', message: 'Phone format is invalid' });
+  }
+}
+
+export function validateCustomerInput(input: CreateCustomerInput): ValidationErrorDetail[] {
+  const errors: ValidationErrorDetail[] = [];
+  const email = input.email?.trim();
+
+  validateName(input.name, errors);
+
+  if (!email) {
+    errors.push({ field: 'email', message: 'Email is required and cannot be empty' });
+  } else if (!CUSTOMER_EMAIL_REGEX.test(email)) {
+    errors.push({ field: 'email', message: 'Email format is invalid' });
+  }
+
+  validatePhone(input.phone, errors);
+
+  return errors;
+}
+
+export function validateCustomerUpdateInput(
+  input: UpdateCustomerInput & { email?: string }
+): ValidationErrorDetail[] {
+  const errors: ValidationErrorDetail[] = [];
+
+  if (input.email !== undefined) {
+    errors.push({ field: 'email', message: 'Email cannot be updated' });
+  }
+
+  if (input.name !== undefined) {
+    validateName(input.name, errors);
+  }
+
+  if (input.phone !== undefined) {
+    validatePhone(input.phone, errors);
+  }
+
+  return errors;
+}
+
+export const CUSTOMER_VALIDATION_CONSTANTS = {
+  CUSTOMER_NAME_MIN_LENGTH,
+  CUSTOMER_NAME_MAX_LENGTH,
+  CUSTOMER_NAME_REGEX,
+  CUSTOMER_EMAIL_REGEX,
+  CUSTOMER_PHONE_REGEX,
 };

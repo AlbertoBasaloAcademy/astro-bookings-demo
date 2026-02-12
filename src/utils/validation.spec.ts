@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
+import { CreateCustomerInput, UpdateCustomerInput } from '../types/customer.js';
 import { CreateRocketInput } from '../types/rocket.js';
-import { ROCKET_STORE_CONSTANTS, validateRocketInput } from './validation.js';
+import {
+    CUSTOMER_VALIDATION_CONSTANTS,
+    ROCKET_STORE_CONSTANTS,
+    validateCustomerInput,
+    validateCustomerUpdateInput,
+    validateEmailUniqueness,
+    validateRocketInput,
+} from './validation.js';
 
 describe('validateRocketInput', () => {
   describe('name validation', () => {
@@ -130,5 +138,107 @@ describe('validateRocketInput', () => {
         'mars',
       ]);
     });
+  });
+});
+
+describe('validateCustomerInput', () => {
+  it('should pass with valid input', () => {
+    const input: CreateCustomerInput = {
+      name: 'Ada Lovelace',
+      email: 'ada@example.com',
+      phone: '+15551234567',
+    };
+
+    expect(validateCustomerInput(input)).toHaveLength(0);
+  });
+
+  it('should fail when fields are missing', () => {
+    const input = {} as CreateCustomerInput;
+    const errors = validateCustomerInput(input);
+
+    expect(errors).toHaveLength(3);
+    expect(errors.some((error) => error.field === 'name')).toBe(true);
+    expect(errors.some((error) => error.field === 'email')).toBe(true);
+    expect(errors.some((error) => error.field === 'phone')).toBe(true);
+  });
+
+  it('should fail with invalid email and phone', () => {
+    const input: CreateCustomerInput = {
+      name: 'Valid Name',
+      email: 'invalid-email',
+      phone: '12345',
+    };
+
+    const errors = validateCustomerInput(input);
+    expect(errors.some((error) => error.field === 'email')).toBe(true);
+    expect(errors.some((error) => error.field === 'phone')).toBe(true);
+  });
+
+  it('should fail with invalid name characters', () => {
+    const input: CreateCustomerInput = {
+      name: 'Ada123',
+      email: 'ada@example.com',
+      phone: '+15551234567',
+    };
+
+    const errors = validateCustomerInput(input);
+    const nameError = errors.find((error) => error.field === 'name');
+    expect(nameError).toBeDefined();
+  });
+});
+
+describe('validateCustomerUpdateInput', () => {
+  it('should allow valid partial updates', () => {
+    const input: UpdateCustomerInput = {
+      name: 'Grace Hopper',
+    };
+
+    expect(validateCustomerUpdateInput(input)).toHaveLength(0);
+  });
+
+  it('should reject email updates', () => {
+    const input = {
+      email: 'new@example.com',
+    } as UpdateCustomerInput & { email?: string };
+
+    const errors = validateCustomerUpdateInput(input);
+    expect(errors).toHaveLength(1);
+    expect(errors[0].field).toBe('email');
+  });
+
+  it('should reject invalid phone updates', () => {
+    const input: UpdateCustomerInput = {
+      phone: 'invalid-phone',
+    };
+
+    const errors = validateCustomerUpdateInput(input);
+    const phoneError = errors.find((error) => error.field === 'phone');
+    expect(phoneError).toBeDefined();
+  });
+});
+
+describe('validateEmailUniqueness', () => {
+  it('should return error when email already exists', () => {
+    const lookup = (email: string) => (email === 'exists@example.com' ? { id: '1' } : undefined);
+
+    const errors = validateEmailUniqueness('exists@example.com', lookup);
+    expect(errors).toHaveLength(1);
+    expect(errors[0].field).toBe('email');
+  });
+
+  it('should allow same email for current customer', () => {
+    const lookup = (email: string) => (email === 'exists@example.com' ? { id: '1' } : undefined);
+
+    const errors = validateEmailUniqueness('exists@example.com', lookup, '1');
+    expect(errors).toHaveLength(0);
+  });
+});
+
+describe('CUSTOMER_VALIDATION_CONSTANTS', () => {
+  it('should export validation constants', () => {
+    expect(CUSTOMER_VALIDATION_CONSTANTS.CUSTOMER_NAME_MIN_LENGTH).toBe(2);
+    expect(CUSTOMER_VALIDATION_CONSTANTS.CUSTOMER_NAME_MAX_LENGTH).toBe(60);
+    expect(CUSTOMER_VALIDATION_CONSTANTS.CUSTOMER_EMAIL_REGEX).toBeInstanceOf(RegExp);
+    expect(CUSTOMER_VALIDATION_CONSTANTS.CUSTOMER_PHONE_REGEX).toBeInstanceOf(RegExp);
   });
 });

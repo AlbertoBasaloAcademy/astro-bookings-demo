@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { rocketStore } from '../services/rocketStore.js';
 import { CreateRocketInput, RocketRange } from '../types/rocket.js';
-import { handleError, parseIntParam, parseStringParam } from '../utils/error-handler.js';
+import { handleError, parseIntParam, parsePaginationParams, parseStringParam } from '../utils/error-handler.js';
 
 export const rocketRouter = Router();
 
@@ -34,8 +34,7 @@ rocketRouter.get('/:id', (req: Request, res: Response) => {
 
 // GET /api/rockets - Get all rockets with filtering and pagination
 rocketRouter.get('/', (req: Request, res: Response) => {
-  const page = parseIntParam(req.query.page as string, 1);
-  const pageSize = Math.min(100, parseIntParam(req.query.pageSize as string, 10));
+  const { page, pageSize } = parsePaginationParams(req.query.page as string, req.query.pageSize as string);
   const range = (req.query.range as RocketRange) || undefined;
   const minCapacity = req.query.minCapacity ? parseIntParam(req.query.minCapacity as string, 0) : undefined;
 
