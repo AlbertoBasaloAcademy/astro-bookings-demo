@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import type { Booking } from '../types/booking.js';
 import { InMemoryBookingRepository } from './booking.repository.js';
 
