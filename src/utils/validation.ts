@@ -1,3 +1,4 @@
+import { CreateBookingInput } from '../types/booking.js';
 import { CreateCustomerInput, UpdateCustomerInput } from '../types/customer.js';
 import { CreateRocketInput, RocketRange } from '../types/rocket.js';
 import { ValidationErrorDetail } from './error-handler.js';
@@ -120,4 +121,37 @@ export const CUSTOMER_VALIDATION_CONSTANTS = {
   CUSTOMER_NAME_REGEX,
   CUSTOMER_EMAIL_REGEX,
   CUSTOMER_PHONE_REGEX,
+};
+
+const MIN_SEAT_COUNT = 1;
+
+export function validateBookingInput(input: CreateBookingInput): ValidationErrorDetail[] {
+  const errors: ValidationErrorDetail[] = [];
+
+  // Validate launchId
+  if (!input.launchId || typeof input.launchId !== 'string' || input.launchId.trim() === '') {
+    errors.push({ field: 'launchId', message: 'Launch ID is required' });
+  }
+
+  // Validate customerEmail
+  const email = input.customerEmail?.trim();
+  if (!email) {
+    errors.push({ field: 'customerEmail', message: 'Customer email is required' });
+  } else if (!CUSTOMER_EMAIL_REGEX.test(email)) {
+    errors.push({ field: 'customerEmail', message: 'Customer email format is invalid' });
+  }
+
+  // Validate seatCount
+  if (!Number.isInteger(input.seatCount) || input.seatCount < MIN_SEAT_COUNT) {
+    errors.push({
+      field: 'seatCount',
+      message: `Seat count must be an integer >= ${MIN_SEAT_COUNT}`,
+    });
+  }
+
+  return errors;
+}
+
+export const BOOKING_VALIDATION_CONSTANTS = {
+  MIN_SEAT_COUNT,
 };

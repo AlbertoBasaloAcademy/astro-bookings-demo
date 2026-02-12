@@ -1,4 +1,5 @@
 import express from 'express';
+import { bookingRouter } from './routes/bookingRoutes.js';
 import { customerRouter } from './routes/customerRoutes.js';
 import { launchRouter } from './routes/launchRoutes.js';
 import { rocketRouter } from './routes/rocketRoutes.js';
@@ -16,6 +17,7 @@ app.get('/health', (req, res) => {
 app.use('/api/rockets', rocketRouter);
 app.use('/api/launches', launchRouter);
 app.use('/api/customers', customerRouter);
+app.use('/api/bookings', bookingRouter);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {

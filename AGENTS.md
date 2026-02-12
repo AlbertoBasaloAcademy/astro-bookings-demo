@@ -15,7 +15,7 @@ This is a demo system for training purposes.
 - Security: **None** (demo only)
 - Testing: **Playwright 1.58** (E2E), **Vitest 4.0** (unit)
 - Logging: **Console via logger utility** (info/warn/error/debug)
-- Version: **1.4.0** (tracked in CHANGELOG.md)
+- Version: **1.5.0** (tracked in CHANGELOG.md)
 
 ### Development workflow
 ```bash
@@ -54,14 +54,19 @@ npm run test:coverage  # Generate unit test coverage report
 ├── playwright.config.ts  # Playwright test configuration
 ├── specs/                # Specification documents
 │   ├── rockets.spec.md   # Rocket API specification
-│   └── launches.spec.md  # Launches API specification
+│   ├── launches.spec.md  # Launches API specification
+│   └── feat-seat-booking.spec.md # Seat booking API specification
 ├── src/                  # Source code
 │   ├── index.ts          # Application entry point
 │   ├── routes/           # Express route handlers
+│   │   ├── bookingRoutes.ts
 │   │   ├── customerRoutes.ts
 │   │   ├── launchRoutes.ts
 │   │   └── rocketRoutes.ts
 │   ├── services/         # Business logic and data stores
+│   │   ├── booking.repository.ts
+│   │   ├── booking.service.ts
+│   │   ├── bookingStore.ts
 │   │   ├── customer.repository.ts
 │   │   ├── customer.service.ts
 │   │   ├── customerStore.ts
@@ -72,6 +77,7 @@ npm run test:coverage  # Generate unit test coverage report
 │   │   ├── rocket.service.ts
 │   │   └── rocketStore.ts
 │   ├── types/            # TypeScript type definitions
+│   │   ├── booking.ts    # Booking types and data structures
 │   │   ├── customer.ts   # Customer types and data structures
 │   │   ├── launch.ts     # Launch types and data structures
 │   │   └── rocket.ts     # Rocket types and data structures
@@ -79,11 +85,15 @@ npm run test:coverage  # Generate unit test coverage report
 │       ├── error-handler.ts   # Error handling with custom error types
 │       ├── logger.ts          # Leveled logging utility
 │       └── validation.ts      # Input validation helpers
-└── tests/                # Playwright test files
-    ├── customers.spec.ts # Customer API tests
-    ├── health.spec.ts    # Health check tests
-    ├── launches.spec.ts  # Launch API tests
-    └── rockets.spec.ts   # Rocket API tests
+├── tests/                # Playwright test files
+│   ├── bookings.spec.ts  # Booking API tests
+│   ├── customers.spec.ts # Customer API tests
+│   ├── health.spec.ts    # Health check tests
+│   ├── launches.spec.ts  # Launch API tests
+│   ├── rockets.spec.ts   # Rocket API tests
+│   └── helpers/          # Test utilities
+│       └── testSetup.ts  # Test data setup helpers
+└── coverage/             # Test coverage reports
 ```
 
 ### Architecture & Coding Standards
