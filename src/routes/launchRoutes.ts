@@ -22,63 +22,67 @@ launchRouter.post('/', (req: Request, res: Response) => {
 
 // GET /api/launches/:id - Get launch by ID with availability
 launchRouter.get('/:id', (req: Request, res: Response) => {
-  const id = parseStringParam(req.params.id);
-  if (!id) {
-    res.status(400).json({ error: 'Launch ID is required' });
-    return;
+  try {
+    const id = parseStringParam(req.params.id);
+    if (!id) {
+      res.status(400).json({ error: 'Launch ID is required' });
+      return;
+    }
+
+    const launch = launchService.getById(id);
+    if (!launch) {
+      res.status(404).json({ error: 'Launch not found' });
+      return;
+    }
+
+    const rocket = rocketStore.getById(launch.rocketId);
+    if (!rocket) {
+      res.status(500).json({ error: 'Associated rocket not found' });
+      return;
+    }
+
+    const availability = bookingService.getAvailability(id);
+
+    const response = {
+      ...launch,
+      rocketName: rocket.name,
+      totalSeats: rocket.capacity,
+      bookedSeats: availability.bookedSeats,
+      availableSeats: availability.availableSeats,
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    handleError(error, res);
   }
-
-  const launch = launchService.getById(id);
-  if (!launch) {
-    res.status(404).json({ error: 'Launch not found' });
-    return;
-  }
-
-  const rocket = rocketStore.getById(launch.rocketId);
-  if (!rocket) {
-    res.status(500).json({ error: 'Associated rocket not found' });
-    return;
-  }
-
-  // TODO: Get booked passengers from booking service (step 7)
-  const bookedPassengers = 0;
-  const availableSeats = rocket.capacity - bookedPassengers;
-
-  const response = {
-    ...launch,
-    rocketName: rocket.name,
-    totalSeats: rocket.capacity,
-    bookedPassengers,
-    availableSeats,
-  };
-
-  res.status(200).json(response);
 });
 
 // GET /api/launches - Get all launches with availability
 launchRouter.get('/', (req: Request, res: Response) => {
-  const launches = launchService.getAll();
+  try {
+    const launches = launchService.getAll();
 
-  const launchesWithAvailability = launches.map((launch) => {
-    const rocket = rocketStore.getById(launch.rocketId);
-    if (!rocket) {
-      return launch;
-    }
+    const launchesWithAvailability = launches.map((launch) => {
+      const rocket = rocketStore.getById(launch.rocketId);
+      if (!rocket) {
+        return launch;
+      }
 
-    // TODO: Get booked passengers from booking service (step 7)
-    const bookedPassengers = 0;
-    const availableSeats = rocket.capacity - bookedPassengers;
+      const availability = bookingService.getAvailability(launch.id);
 
-    return {
-      ...launch,
-      rocketName: rocket.name,
-      totalSeats: rocket.capacity,
-      bookedPassengers,
-      availableSeats,
-    };
-  });
+      return {
+        ...launch,
+        rocketName: rocket.name,
+        totalSeats: rocket.capacity,
+        bookedSeats: availability.bookedSeats,
+        availableSeats: availability.availableSeats,
+      };
+    });
 
-  res.status(200).json(launchesWithAvailability);
+    res.status(200).json(launchesWithAvailability);
+  } catch (error) {
+    handleError(error, res);
+  }
 });
 
 // PUT /api/launches/:id - Update launch
@@ -97,15 +101,19 @@ launchRouter.put('/:id', (req: Request, res: Response) => {
     }
 
     const rocket = rocketStore.getById(launch.rocketId);
-    const bookedPassengers = 0;
-    const availableSeats = rocket ? rocket.capacity - bookedPassengers : 0;
+    if (!rocket) {
+      res.status(500).json({ error: 'Associated rocket not found' });
+      return;
+    }
+
+    const availability = bookingService.getAvailability(id);
 
     const response = {
       ...launch,
-      rocketName: rocket?.name,
-      totalSeats: rocket?.capacity,
-      bookedPassengers,
-      availableSeats,
+      rocketName: rocket.name,
+      totalSeats: rocket.capacity,
+      bookedSeats: availability.bookedSeats,
+      availableSeats: availability.availableSeats,
     };
 
     res.status(200).json(response);

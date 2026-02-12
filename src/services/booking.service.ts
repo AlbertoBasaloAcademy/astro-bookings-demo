@@ -90,29 +90,23 @@ export class BookingService {
       return undefined;
     }
 
-    const customer = customerService.getById(booking.customerId);
-    const launch = launchService.getById(booking.launchId);
-    const rocket = rocketStore.getById(launch?.rocketId || '');
-
-    if (!customer || !launch || !rocket) {
+    const data = this.lookupDependentData(booking);
+    if (!data) {
       return undefined;
     }
 
-    return this.buildBookingResponse(booking, customer.email, rocket.name, launch.price);
+    return this.buildBookingResponse(booking, data.customer.email, data.rocket.name, data.launch.price);
   }
 
   getByLaunchId(launchId: string): BookingResponse[] {
     const bookings = this.repository.findByLaunchId(launchId);
     return bookings.map((b) => {
-      const customer = customerService.getById(b.customerId);
-      const launch = launchService.getById(b.launchId);
-      const rocket = rocketStore.getById(launch?.rocketId || '');
-
-      if (!customer || !launch || !rocket) {
-        throw new Error('Missing dependent data');
+      const data = this.lookupDependentData(b);
+      if (!data) {
+        throw new AppError(500, 'Missing dependent data for booking enrichment');
       }
 
-      return this.buildBookingResponse(b, customer.email, rocket.name, launch.price);
+      return this.buildBookingResponse(b, data.customer.email, data.rocket.name, data.launch.price);
     });
   }
 
@@ -126,30 +120,18 @@ export class BookingService {
 
     const bookings = this.repository.findByCustomerId(customer.id);
     return bookings.map((b) => {
-      const launch = launchService.getById(b.launchId);
-      const rocket = rocketStore.getById(launch?.rocketId || '');
-
-      if (!launch || !rocket) {
-        throw new Error('Missing dependent data');
+      const data = this.lookupDependentData(b);
+      if (!data) {
+        throw new AppError(500, 'Missing dependent data for booking enrichment');
       }
 
-      return this.buildBookingResponse(b, customer.email, rocket.name, launch.price);
+      return this.buildBookingResponse(b, customer.email, data.rocket.name, data.launch.price);
     });
   }
 
   getAvailableSeats(launchId: string): number {
-    const launch = launchService.getById(launchId);
-    if (!launch) {
-      throw new AppError(404, 'Launch not found');
-    }
-
-    const rocket = rocketStore.getById(launch.rocketId);
-    if (!rocket) {
-      throw new AppError(500, 'Rocket not found');
-    }
-
-    const totalBooked = this.repository.calculateTotalBookedSeats(launchId);
-    return rocket.capacity - totalBooked;
+    const availability = this.getAvailability(launchId);
+    return availability.availableSeats;
   }
 
   getAvailability(launchId: string): BookingAvailability {
@@ -185,16 +167,13 @@ export class BookingService {
     };
 
     const saved = this.repository.update(updated);
+    const data = this.lookupDependentData(saved);
 
-    const customer = customerService.getById(saved.customerId);
-    const launch = launchService.getById(saved.launchId);
-    const rocket = rocketStore.getById(launch?.rocketId || '');
-
-    if (!customer || !launch || !rocket) {
+    if (!data) {
       return undefined;
     }
 
-    return this.buildBookingResponse(saved, customer.email, rocket.name, launch.price);
+    return this.buildBookingResponse(saved, data.customer.email, data.rocket.name, data.launch.price);
   }
 
   delete(id: string): boolean {
@@ -203,6 +182,18 @@ export class BookingService {
 
   private validateBookingInput(input: CreateBookingInput): ValidationErrorDetail[] {
     return validateBookingInput(input);
+  }
+
+  private lookupDependentData(booking: Booking): { customer: any; launch: any; rocket: any } | null {
+    const customer = customerService.getById(booking.customerId);
+    const launch = launchService.getById(booking.launchId);
+    const rocket = launch ? rocketStore.getById(launch.rocketId) : null;
+
+    if (!customer || !launch || !rocket) {
+      return null;
+    }
+
+    return { customer, launch, rocket };
   }
 
   private buildBookingResponse(

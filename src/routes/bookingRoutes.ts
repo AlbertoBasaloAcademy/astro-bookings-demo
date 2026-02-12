@@ -18,28 +18,7 @@ bookingRouter.post('/', (req: Request, res: Response) => {
   }
 });
 
-// GET /api/bookings/:id - Get booking by ID
-bookingRouter.get('/:id', (req: Request, res: Response) => {
-  try {
-    const id = parseStringParam(req.params.id);
-    if (!id) {
-      res.status(400).json({ error: 'Booking ID is required' });
-      return;
-    }
-
-    const booking = bookingService.getById(id);
-    if (!booking) {
-      res.status(404).json({ error: 'Booking not found' });
-      return;
-    }
-
-    res.status(200).json(booking);
-  } catch (error) {
-    handleError(error, res);
-  }
-});
-
-// GET /api/bookings/launch/:launchId - Get all bookings for a launch
+// GET /api/bookings/launch/:launchId - Get all bookings for a launch (specific route first)
 bookingRouter.get('/launch/:launchId', (req: Request, res: Response) => {
   try {
     const launchId = parseStringParam(req.params.launchId);
@@ -55,10 +34,10 @@ bookingRouter.get('/launch/:launchId', (req: Request, res: Response) => {
   }
 });
 
-// GET /api/bookings/customer/:email - Get all bookings for a customer
+// GET /api/bookings/customer/:email - Get all bookings for a customer (specific route)
 bookingRouter.get('/customer/:email', (req: Request, res: Response) => {
   try {
-    const email = Array.isArray(req.params.email) ? req.params.email[0] : req.params.email;
+    const email = parseStringParam(req.params.email);
     if (!email) {
       res.status(400).json({ error: 'Customer email is required' });
       return;
@@ -66,6 +45,27 @@ bookingRouter.get('/customer/:email', (req: Request, res: Response) => {
 
     const bookings = bookingService.getByCustomerEmail(email);
     res.status(200).json(bookings);
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
+// GET /api/bookings/:id - Get booking by ID (general route last)
+bookingRouter.get('/:id', (req: Request, res: Response) => {
+  try {
+    const id = parseStringParam(req.params.id);
+    if (!id) {
+      res.status(400).json({ error: 'Booking ID is required' });
+      return;
+    }
+
+    const booking = bookingService.getById(id);
+    if (!booking) {
+      res.status(404).json({ error: 'Booking not found' });
+      return;
+    }
+
+    res.status(200).json(booking);
   } catch (error) {
     handleError(error, res);
   }

@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 import type { Express } from 'express';
 import http from 'node:http';
 import type { AddressInfo } from 'node:net';
+import { setupTestData } from './helpers/testSetup.js';
 
 let server: http.Server;
 let baseURL: string;
@@ -30,49 +31,9 @@ test.afterAll(async () => {
 });
 
 test.describe('Booking Management API', () => {
-  // Setup: Create test rocket, launch, and customer for booking tests
-  async function setupTestData(request: any) {
-    // Create rocket
-    const rocketResponse = await request.post(`${baseURL}/api/rockets`, {
-      data: {
-        name: `Test Rocket ${Date.now()}`,
-        range: 'orbital',
-        capacity: 5
-      }
-    });
-    const rocket = await rocketResponse.json();
-
-    // Create launch (in active status so it can be booked)
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 1);
-    
-    const launchResponse = await request.post(`${baseURL}/api/launches`, {
-      data: {
-        rocketId: rocket.id,
-        scheduledDate: futureDate.toISOString(),
-        price: 100,
-        minimumPassengers: 1,
-        status: 'active'
-      }
-    });
-    const launch = await launchResponse.json();
-
-    // Create customer
-    const customerResponse = await request.post(`${baseURL}/api/customers`, {
-      data: {
-        name: 'Test User',
-        email: `user-${Date.now()}@example.com`,
-        phone: '+1234567890'
-      }
-    });
-    const customer = await customerResponse.json();
-
-    return { rocket, launch, customer };
-  }
-
   // AC1: Create booking with valid data → HTTP 201
   test('should create a booking with valid data and return HTTP 201 with booking confirmation', async ({ request }) => {
-    const { launch, customer } = await setupTestData(request);
+    const { launch, customer } = await setupTestData(request, baseURL);
 
     const bookingData = {
       launchId: launch.id,
@@ -100,7 +61,7 @@ test.describe('Booking Management API', () => {
 
   // AC2: Insufficient seats available → HTTP 400 with error message
   test('should return HTTP 400 with "Insufficient seats available" when exceeding capacity', async ({ request }) => {
-    const { launch, customer } = await setupTestData(request);
+    const { launch, customer } = await setupTestData(request, baseURL);
 
     // First booking: use 4 out of 5 seats
     await request.post(`${baseURL}/api/bookings`, {
@@ -136,7 +97,7 @@ test.describe('Booking Management API', () => {
 
   // AC3: Launch not in active status → HTTP 400
   test('should return HTTP 400 when booking non-active launch', async ({ request }) => {
-    const { rocket, customer } = await setupTestData(request);
+    const { rocket, customer } = await setupTestData(request, baseURL);
 
     // Create launch with scheduled status (not active)
     const futureDate = new Date();
@@ -168,7 +129,7 @@ test.describe('Booking Management API', () => {
 
   // AC4: Calculate total cost as seat quantity × launch price
   test('should calculate total cost as seatCount × launchPrice', async ({ request }) => {
-    const { launch, customer } = await setupTestData(request);
+    const { launch, customer } = await setupTestData(request, baseURL);
     
     const seatCount = 3;
     const expectedTotalPrice = seatCount * launch.price;
@@ -189,7 +150,7 @@ test.describe('Booking Management API', () => {
 
   // AC5: Prevent concurrent overbooking and update availability immediately
   test('should prevent overbooking and update availability immediately', async ({ request }) => {
-    const { launch, customer } = await setupTestData(request);
+    const { launch, customer } = await setupTestData(request, baseURL);
 
     // Create three customers
     const customers = [customer];
@@ -247,7 +208,7 @@ test.describe('Booking Management API', () => {
 
   // AC6: Retrieve customer booking history with complete details
   test('should return all bookings for customer with complete details including status and cost', async ({ request }) => {
-    const { launch, customer } = await setupTestData(request);
+    const { launch, customer } = await setupTestData(request, baseURL);
 
     // Create multiple bookings for the same customer
     const bookingData1 = {
@@ -317,7 +278,7 @@ test.describe('Booking Management API', () => {
 
   // AC7: Invalid email format returns HTTP 400 with validation error
   test('should return HTTP 400 with validation error for invalid email format', async ({ request }) => {
-    const { launch } = await setupTestData(request);
+    const { launch } = await setupTestData(request, baseURL);
 
     const response = await request.post(`${baseURL}/api/bookings`, {
       data: {
@@ -336,7 +297,7 @@ test.describe('Booking Management API', () => {
 
   // AC8: Payment status initialized as pending
   test('should initialize payment status as "pending" when booking is created', async ({ request }) => {
-    const { launch, customer } = await setupTestData(request);
+    const { launch, customer } = await setupTestData(request, baseURL);
 
     const response = await request.post(`${baseURL}/api/bookings`, {
       data: {
@@ -353,7 +314,7 @@ test.describe('Booking Management API', () => {
 
   // AC9: Rollback on failure - prevent booking if would exceed capacity
   test('should rollback booking and return HTTP 400 if total exceeds rocket capacity', async ({ request }) => {
-    const { launch, customer } = await setupTestData(request);
+    const { launch, customer } = await setupTestData(request, baseURL);
 
     // First booking: 3 seats (capacity is 5)
     const response1 = await request.post(`${baseURL}/api/bookings`, {
@@ -396,7 +357,7 @@ test.describe('Booking Management API', () => {
 
   // Additional: Retrieve booking by ID
   test('should retrieve a specific booking by ID and return HTTP 200', async ({ request }) => {
-    const { launch, customer } = await setupTestData(request);
+    const { launch, customer } = await setupTestData(request, baseURL);
 
     const createResponse = await request.post(`${baseURL}/api/bookings`, {
       data: {
@@ -430,7 +391,7 @@ test.describe('Booking Management API', () => {
 
   // Additional: Check launch availability endpoint
   test('should return launch availability with correct seat counts', async ({ request }) => {
-    const { launch, customer } = await setupTestData(request);
+    const { launch, customer } = await setupTestData(request, baseURL);
 
     // Create a booking
     const bookingResponse = await request.post(`${baseURL}/api/bookings`, {
@@ -455,7 +416,7 @@ test.describe('Booking Management API', () => {
 
   // Additional: Reject booking with 0 seats
   test('should return HTTP 400 when attempting to book 0 seats', async ({ request }) => {
-    const { launch, customer } = await setupTestData(request);
+    const { launch, customer } = await setupTestData(request, baseURL);
 
     const response = await request.post(`${baseURL}/api/bookings`, {
       data: {
@@ -473,7 +434,7 @@ test.describe('Booking Management API', () => {
 
   // Additional: Reject booking for non-existent launch
   test('should return HTTP 400 when launch does not exist', async ({ request }) => {
-    const { customer } = await setupTestData(request);
+    const { customer } = await setupTestData(request, baseURL);
 
     const response = await request.post(`${baseURL}/api/bookings`, {
       data: {
@@ -491,7 +452,7 @@ test.describe('Booking Management API', () => {
 
   // Additional: Reject booking for non-existent customer
   test('should return HTTP 400 when customer does not exist', async ({ request }) => {
-    const { launch } = await setupTestData(request);
+    const { launch } = await setupTestData(request, baseURL);
 
     const response = await request.post(`${baseURL}/api/bookings`, {
       data: {

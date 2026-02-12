@@ -1,6 +1,6 @@
 # Seat Booking and Reservation Specification
 - **Type**: feat
-- **Status**: Coded
+- **Status**: Verified
 
 ## Problem Description
 
