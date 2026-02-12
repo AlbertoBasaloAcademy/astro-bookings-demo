@@ -1,4 +1,5 @@
 import { Request, Response, Router } from 'express';
+import { bookingService } from '../services/booking.service.js';
 import { launchService } from '../services/launch.service.js';
 import { rocketStore } from '../services/rocketStore.js';
 import type { CreateLaunchInput } from '../types/launch.js';
@@ -129,4 +130,20 @@ launchRouter.delete('/:id', (req: Request, res: Response) => {
 
   info('Launch deleted', { launchId: id });
   res.status(204).send();
+});
+
+// GET /api/launches/:launchId/availability - Get available seats for a launch
+launchRouter.get('/:launchId/availability', (req: Request, res: Response) => {
+  try {
+    const launchId = parseStringParam(req.params.launchId);
+    if (!launchId) {
+      res.status(400).json({ error: 'Launch ID is required' });
+      return;
+    }
+
+    const availability = bookingService.getAvailability(launchId);
+    res.status(200).json(availability);
+  } catch (error) {
+    handleError(error, res);
+  }
 });

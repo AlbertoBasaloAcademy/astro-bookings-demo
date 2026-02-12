@@ -111,12 +111,12 @@ erDiagram
 - Rocket entity with CRUD operations
 - Launch entity with CRUD operations and lifecycle management
 
-**Phase 2 - In Progress:**
+**Phase 2 - Completed:**
 - Customer entity with registration and profile management
 
-**Phase 3 - Planned:**
-- Booking entity with seat reservation and payment processing
-- Payment entity for transaction tracking
+**Phase 3 - In Progress:**
+- Booking entity with seat reservation and real-time availability tracking
+- Payment status tracking (pending | completed | failed)
 
 **Data Integrity Constraints:**
 - Foreign keys link launches to rockets and bookings to launches/customers
