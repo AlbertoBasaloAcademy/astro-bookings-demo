@@ -8,6 +8,25 @@
   "chat.promptFilesLocations": {
     ".agents/prompts": true
   },
+  "chat.useAgentsMdFile": true,
+  "material-icon-theme.files.associations": {
+    "AGENTS.md": "contributing",
+    "*.briefing.md": "apiblueprint",
+    "*.plan.md": "todo",
+    "*.spec.md": "conduct",
+    "*.template.md": "template",
+    "ADD.md": "architecture",
+    "briefing.md": "apiblueprint",
+    "ERM.md": "architecture",
+    "PRD.md": "architecture",
+    "SKILL.md": "slint",
+  },
+  "material-icon-theme.folders.associations": {
+    ".agents": "robot",
+    "agents": "robot",
+    "prompts": "prompts",
+    "skills": "prompts",
+  },
   "workbench.preferredDarkColorTheme": "Default Dark Modern",
   "workbench.preferredLightColorTheme": "Default Dark Modern",
   "window.zoomLevel": 1
