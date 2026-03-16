@@ -1,23 +1,29 @@
 # Agents Instructions
 
+- **Root_Folder**: /.
+- **Agents_Folder**: .agents.
+- **Agents_file**: AGENTS.md.
+- **Project_Folder**: project.
+
 ## Product Overview
-AstroBookings is a backend API for booking rocket launches.
-Rockets have capacity limits and launch status lifecycles.
-Customer booking and payment features are planned.
-This is a demo system for training purposes.
+AstroBookings is a demo backend API for rocket launch booking.
+It manages rockets, launches, customers, and bookings.
+It enforces capacity rules and launch lifecycle transitions.
+Customer booking and payment flows are planned next.
+This project is for training and architecture practice.
 
 ## Technical Implementation
 
 ### Tech Stack
-- Language: **TypeScript 5.6** on **Node.js 22**
-- Framework: **Express 4.21**
-- Database: **In-memory store** (no persistence)
-- Security: **None** (demo only)
-- Testing: **Playwright 1.58** (E2E), **Vitest 4.0** (unit)
-- Logging: **Console via logger utility** (info/warn/error/debug)
-- Version: **1.5.0** (tracked in CHANGELOG.md)
+- **Language**: TypeScript 5.6 on Node.js 22.
+- **Framework**: Express 4.21.
+- **Database**: In-memory store.
+- **Security**: None for this demo stage.
+- **Testing**: Playwright 1.58 and Vitest 4.0.
+- **Logging**: Console logger with levels.
+- **Version**: 1.5.0 in CHANGELOG.md.
 
-### Development workflow
+### Development Workflow
 ```bash
 # Set up the project
 npm install
@@ -26,90 +32,55 @@ npm install
 npm run build
 
 # Run the project
-npm run dev        # Development mode with watch
-npm start          # Production mode
+npm run dev
+npm start
 
 # Test the project
-npm test           # Run Playwright E2E tests
-npm run test:dev   # Run unit tests in watch mode
-npm run test:unit  # Run all unit tests once
-npm run test:coverage  # Generate unit test coverage report
+npm test
+npm run test:dev
+npm run test:unit
+npm run test:coverage
 
 # Deploy the project
-# No deployment configured - demo only
+# No deployment configured for this demo
 ```
 
-### Folder structure
+### Folder Structure
 ```text
-.                         # Project root  
-├── AGENTS.md             # This file with instructions for AI agents
-├── .agents/              # Agent docs and skills
-│   ├── PRD.md            # Product Requirements Document
-│   ├── ADD.md            # Architectural Design Document
-│   └── skills/           # Agent skills and templates
-├── README.md             # The main human documentation file
-├── CHANGELOG.md          # Version history and release notes
-├── package.json          # Node.js dependencies and scripts
-├── tsconfig.json         # TypeScript configuration
-├── playwright.config.ts  # Playwright test configuration
-├── specs/                # Specification documents
-│   ├── rockets.spec.md   # Rocket API specification
-│   ├── launches.spec.md  # Launches API specification
-│   └── feat-seat-booking.spec.md # Seat booking API specification
-├── src/                  # Source code
-│   ├── index.ts          # Application entry point
+.                         # Project root
+├── AGENTS.md             # Main instructions file for agents
+├── .agents/              # Agent files, prompts, and skills
+│   └── skills/           # Reusable skill definitions
+├── project/              # Project context and planning docs
+│   ├── briefing.md       # Project briefing summary
+│   ├── PRD.md            # Product requirements document
+│   ├── ADD.md            # Architecture design document
+│   └── specs/            # Detailed feature specifications
+├── src/                  # Application source code
 │   ├── routes/           # Express route handlers
-│   │   ├── bookingRoutes.ts
-│   │   ├── customerRoutes.ts
-│   │   ├── launchRoutes.ts
-│   │   └── rocketRoutes.ts
-│   ├── services/         # Business logic and data stores
-│   │   ├── booking.repository.ts
-│   │   ├── booking.service.ts
-│   │   ├── bookingStore.ts
-│   │   ├── customer.repository.ts
-│   │   ├── customer.service.ts
-│   │   ├── customerStore.ts
-│   │   ├── launch.repository.ts
-│   │   ├── launch.service.ts
-│   │   ├── launchStore.ts
-│   │   ├── rocket.repository.ts
-│   │   ├── rocket.service.ts
-│   │   └── rocketStore.ts
-│   ├── types/            # TypeScript type definitions
-│   │   ├── booking.ts    # Booking types and data structures
-│   │   ├── customer.ts   # Customer types and data structures
-│   │   ├── launch.ts     # Launch types and data structures
-│   │   └── rocket.ts     # Rocket types and data structures
+│   ├── services/         # Business logic and repositories
+│   ├── types/            # Domain type definitions
 │   └── utils/            # Shared utilities
-│       ├── error-handler.ts   # Error handling with custom error types
-│       ├── logger.ts          # Leveled logging utility
-│       └── validation.ts      # Input validation helpers
-├── tests/                # Playwright test files
-│   ├── bookings.spec.ts  # Booking API tests
-│   ├── customers.spec.ts # Customer API tests
-│   ├── health.spec.ts    # Health check tests
-│   ├── launches.spec.ts  # Launch API tests
-│   ├── rockets.spec.ts   # Rocket API tests
-│   └── helpers/          # Test utilities
-│       └── testSetup.ts  # Test data setup helpers
-└── coverage/             # Test coverage reports
+├── tests/                # End-to-end test suite
+├── CHANGELOG.md          # Version history
+├── README.md             # Human-oriented documentation
+└── package.json          # Scripts and dependencies
 ```
 
-### Architecture & Coding Standards
-- **Type definitions**: Use `type` for data structures, `interface` for class contracts (per TypeScript instructions in .github/instructions/)
-- **File naming**: `kebab-case.{pattern}.ts` (e.g., `rocket.service.ts`, `error-handler.ts`)
-- **Exports**: Prefer named exports over default exports
-- **Error handling**: Custom error classes (`AppError`, `ValidationError`) with structured error responses
-- **Validation**: Centralized validation in utilities
-- **Data storage**: In-memory stores for demo purposes
-- **Logging**: Structured logging with levels (info, warn, error, debug) via LOG_LEVEL env var
+## Behavior And Collaboration
+Write code and docs in English.
+Reply in the user prompt language.
+Be concise, even if grammar is rough.
+Do not invent missing requirements.
+Ask one focused question when blocked.
+Do not revert user edits without approval.
+Keep edits minimal and scoped.
+Run relevant tests after code changes.
+Report risks, assumptions, and next actions.
+Use clear commit messages with proper prefixes.
 
 ## Environment
-- Code and documentation must be in English.
-- Chat responses must be in the language of the user prompt.
-- Sacrifice grammar for conciseness in responses.
-- This is a windows environment using git bash terminal.
-- My default branch is `main`.
-- Remote repository, with active issues, is hosted on GitHub :
-  - [AlbertoBasaloAcademy / astro-bookings-demo](https://github.com/AlbertoBasaloAcademy/astro-bookings-demo)
+- **OS dev**: Windows.
+- **Terminal**: git bash.
+- **Default branch**: main.
+- **Git remote**: AlbertoBasaloAcademy/astro-bookings-demo.
