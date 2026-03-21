@@ -1,94 +1,138 @@
 # AstroBookings Architectural Design Document
 
-A backend API for managing rockets, launches, and future bookings for space travel.
+AstroBookings is a single-process Express REST API for managing rockets, launches, customers, and seat bookings for demo space travel operations.
 
 ### Table of Contents
-- [Stack and tooling](#stack-and-tooling)
-- [Systems Architecture](#systems-architecture)
+- [Stack and Tooling](#stack-and-tooling)
+- [System Summary](#system-summary)
+- [System Architecture](#system-architecture)
 - [Software Architecture](#software-architecture)
-- [Architecture Decisions Record (ADR)](#architecture-decisions-record-adr)
+- [Architecture Decisions Record](#architecture-decisions-record)
+- [Explicitly Out of Scope](#explicitly-out-of-scope)
 
-## Stack and tooling
+## Stack and Tooling
 
 ### Technology Stack
 - Language: TypeScript 5.6
 - Runtime: Node.js 22
 - Framework: Express 4.21
 - Data store: In-memory collections
-- Testing: Playwright 1.58 (E2E), Vitest 4.0 (unit)
-- Logging: Console logger with levels
+- Testing: Playwright 1.58 and Vitest 4.0
+- Logging: Console logger with log levels
 
 ### Development Tools
 - Build: `tsc`
-- Dev server: `tsx watch`
-- Tests: `playwright test` (E2E), `vitest` (unit)
-- Testing: Vitest 4.0, @vitest/coverage-v8 4.0
+- Dev server: `tsx watch src/index.ts`
+- Start: `node dist/index.js`
+- Tests: `playwright test`, `vitest run`, `vitest run --coverage`
 - Package manager: npm
-- Linting: None configured
 - Deployment: None configured
 
-## Systems Architecture
+## System Summary
 
-AstroBookings is a stateless REST API that exposes endpoints for rockets and
-launches. It validates inputs, enforces capacity rules, and returns structured
-JSON responses. The system is designed for demo use with no persistence or
-security layer.
+The current implementation provides in-memory CRUD for rockets, launches, and customers; booking creation and lookup; launch availability calculation; shared validation and error handling; leveled console logging; and automated API and unit tests. The system does not implement authentication, persistent storage, real payment execution, refund workflows, or external integrations.
+
+## System Architecture
 
 ```mermaid
 flowchart LR
-  Client[API Client] --> API[Express Routes]
-  API --> Service[Service Layer]
-  Service --> Repo[Repository Layer]
-  Repo --> Store[In-memory Store]
-  API --> Logger[Logger]
-  API --> Error[Error Handler]
-  E2E[Playwright E2E Tests] -.-> API
-  Unit[Vitest Unit Tests] -.-> Service
-  Unit -.-> Utils[Utils]
+  Client[API Client] --> App[Express App]
+  App --> RocketRoutes[Rocket Routes]
+  App --> LaunchRoutes[Launch Routes]
+  App --> CustomerRoutes[Customer Routes]
+  App --> BookingRoutes[Booking Routes]
+  RocketRoutes --> RocketService[Rocket Service]
+  LaunchRoutes --> LaunchService[Launch Service]
+  LaunchRoutes --> Availability[Availability Read Model]
+  CustomerRoutes --> CustomerService[Customer Service]
+  BookingRoutes --> BookingService[Booking Service]
+  RocketService --> RocketStore[Rocket Store]
+  LaunchService --> LaunchRepo[Launch Repository]
+  CustomerService --> CustomerRepo[Customer Repository]
+  BookingService --> BookingRepo[Booking Repository]
+  LaunchRepo --> LaunchStore[Launch Store]
+  CustomerRepo --> CustomerStore[Customer Store]
+  BookingRepo --> BookingStore[Booking Store]
+  Availability --> RocketStore
+  Availability --> BookingRepo
+  App --> ErrorHandler[Error Handler]
+  App --> Logger[Logger]
+  E2E[Playwright E2E Tests] -.-> App
+  Unit[Vitest Unit Tests] -.-> RocketService
+  Unit -.-> LaunchService
+  Unit -.-> CustomerService
+  Unit -.-> BookingService
 ```
 
 ## Software Architecture
 
 The codebase follows a layered modular design.
 
-- Routes define REST endpoints and delegate to services.
-- Services implement business rules and orchestration.
-- Repositories encapsulate data access for in-memory stores.
-- Stores keep entity arrays and ids for rockets and launches.
-- Utils provide validation, logging, and error handling helpers.
-- Types define shared domain models and API response shapes.
+- **HTTP layer**: Express mounts `/health`, `/api/rockets`, `/api/launches`, `/api/customers`, and `/api/bookings`.
+- **Route layer**: Route modules parse inputs, call services, compose read models, and map errors into JSON responses.
+- **Service layer**: Domain services enforce business rules such as rocket validation, customer uniqueness, launch scheduling constraints, booking seat checks, and booking eligibility on active launches.
+- **Data access layer**: Stores and repositories keep domain entities in memory and generate IDs inside the running process.
+- **Read-model composition**: Launch availability and enriched booking responses are computed at request time from multiple domain sources rather than persisted as separate entities.
+- **Cross-cutting utilities**: Shared modules provide validation helpers, error normalization, and leveled logging.
+- **Test architecture**: Playwright validates public API behavior end-to-end; Vitest validates business logic and repository behavior in isolation.
 
-Data flow: request -> route -> validation -> service -> repository -> store.
-Errors are normalized by the error handler and returned as JSON.
+### Domain Notes
 
-## Architecture Decisions Record (ADR)
+- Rockets are the capacity source for launches.
+- Launches default to `scheduled` when status is omitted.
+- Booking is allowed only when a launch is `active`.
+- The current implementation stores launch status directly on update and does not yet enforce a formal transition graph.
+- `paymentStatus` exists on bookings as a placeholder field, but there is no payment gateway or payment ledger.
 
-### ADR 1: Use Express for REST API
+## Architecture Decisions Record
+
+### ADR 1: Use Express for the REST API
 - **Decision**: Use Express 4.21 for HTTP routing and middleware.
 - **Status**: Accepted
-- **Context**: The API needs a simple and stable REST framework.
-- **Consequences**: Low overhead and fast iteration for demo use.
+- **Context**: The product needs a small, stable framework for a demo backend.
+- **Consequences**: Fast iteration, low ceremony, and explicit route handling.
 
-### ADR 2: In-memory data stores
-- **Decision**: Store rockets and launches in process memory.
+### ADR 2: Keep all domain state in process memory
+- **Decision**: Store rockets, launches, customers, and bookings in memory.
 - **Status**: Accepted
-- **Context**: The system is a training demo with no persistence needs.
-- **Consequences**: Data resets on restart and no concurrency guarantees.
+- **Context**: The system is intended for training and architecture practice rather than production deployment.
+- **Consequences**: Data resets on restart and there are no transactional or concurrency guarantees.
 
-### ADR 3: Validation in shared utilities
-- **Decision**: Centralize validation helpers in `utils/validation.ts`.
+### ADR 3: Centralize validation and error normalization
+- **Decision**: Reuse shared validation and error-handling utilities across route and service layers.
 - **Status**: Accepted
-- **Context**: Consistent rules are needed across routes and services.
-- **Consequences**: Easier reuse and uniform error responses.
+- **Context**: Consistent request validation and JSON error shapes are required across all domains.
+- **Consequences**: Reuse improves consistency, but domain-specific rules still live in services.
 
-### ADR 4: Playwright for e2e tests
-- **Decision**: Use Playwright for API acceptance tests.
+### ADR 4: Derive launch availability at read time
+- **Decision**: Compute availability from rocket capacity minus non-cancelled booking seat totals instead of persisting it.
 - **Status**: Accepted
-- **Context**: The project needs scenario-driven validation of endpoints.
-- **Consequences**: Reliable e2e coverage with clear assertions.
+- **Context**: Availability depends on multiple mutable records and does not need its own storage in the demo architecture.
+- **Consequences**: Read responses stay current without extra synchronization, but all values disappear on restart.
 
-### ADR 5: Vitest for unit testing
-- **Decision**: Use Vitest for service and utility layer unit tests.
+### ADR 5: Use email as stable customer identity for business operations
+- **Decision**: Keep customer email unique, normalized for lookup, and immutable after creation.
 - **Status**: Accepted
-- **Context**: ES modules + TypeScript require zero-config ESM support; Playwright covers E2E.
-- **Consequences**: Fast TDD cycles, colocated tests improve discoverability, mocking for pure business logic validation.
+- **Context**: Bookings need a stable customer identifier without introducing authentication or external identity management.
+- **Consequences**: Integration remains simple, but identity and access control are intentionally absent.
+
+### ADR 6: Keep payment state on bookings without implementing payment infrastructure
+- **Decision**: Model `paymentStatus` on bookings as a placeholder field only.
+- **Status**: Accepted
+- **Context**: The roadmap includes payment processing, but the current demo stops at status storage.
+- **Consequences**: Booking records can represent pending or final payment state later, but there is no gateway, transaction history, or refund flow today.
+
+### ADR 7: Split acceptance testing by layer
+- **Decision**: Use Playwright for API scenarios and Vitest for unit-level service and repository tests.
+- **Status**: Accepted
+- **Context**: The project needs confidence in both public behavior and business rules.
+- **Consequences**: End-to-end flows are protected without losing fast feedback for core logic.
+
+## Explicitly Out of Scope
+
+- Authentication and authorization.
+- Persistent databases and migrations.
+- Real payment gateway integration and reconciliation.
+- Refunds and cancellation finance workflows.
+- Notifications, background jobs, or event-driven integrations.
+- Strict lifecycle transition guards until the backlog hardening item is implemented.

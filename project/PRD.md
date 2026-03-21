@@ -1,74 +1,79 @@
 # AstroBookings Product Requirements Document
 
-A backend API for managing and booking seats on rocket launches for space travel.
+Backend API for managing rockets, launches, customers, and seat bookings for demo space travel operations.
 
 ## Vision and Scope
 
-AstroBookings provides a RESTful API that enables travel agents and administrators to manage rocket inventory, schedule launches with pricing and capacity constraints, and allow customers to book seats on scheduled space flights. The system validates all business rules (capacity limits, minimum passengers, rocket availability) and tracks the complete lifecycle of launches from scheduling to completion.
+AstroBookings provides a REST API for managing rocket inventory, scheduling launches, registering customers, and creating bookings while enforcing capacity and availability rules. The product is intended for training and architecture practice rather than production use.
 
 **Target Users:**
-- **Travel Agents**: Browse available rockets and launches to match customer requirements
-- **System Administrators**: Manage rocket inventory and schedule launches
-- **Customers**: View available launches and book seats (via integrated booking systems)
-- **Booking Systems**: Automated integration for seat reservations and availability checks
+- **Administrators**: Manage rockets and launches.
+- **Travel Agents**: Check launch availability and create bookings for customers.
+- **Client Systems**: Integrate with customer and booking endpoints for demo workflows.
 
-**Scope:**
-The product focuses on backend API operations for rocket and launch management, customer bookings, and basic payment processing. It provides RESTful endpoints with comprehensive validation, error handling, and logging capabilities.
+**In Scope:**
+- Rocket CRUD with filtering and pagination.
+- Launch CRUD with pricing, date, and capacity validation.
+- Customer CRUD with unique and immutable email identity.
+- Booking creation, retrieval, customer history, and launch availability checks.
+- Structured validation, JSON error responses, logging, and automated tests.
 
 **Out of Scope:**
-- User authentication and authorization (demo system)
-- Database persistence (in-memory storage only)
-- Production-grade security features
-- Payment gateway integration (mock only)
-- Frontend user interface
-- Real-time seat availability websockets
-- Multi-currency support
-- Refund processing
+- Authentication and authorization.
+- Database persistence.
+- Real payment gateway integration.
+- Refund workflows.
+- Frontend UI.
+- Real-time notifications or websockets.
 
 ## Functional Requirements
 
 ### FR1: Rocket Inventory Management
-Administrators can create, read, update, and delete rockets with specific ranges (suborbital, orbital, moon, mars) and passenger capacity (1-10 seats). The system validates rocket properties including name uniqueness, valid range values, and capacity constraints. Rockets can be filtered by range and minimum capacity, with paginated listings for efficient browsing.
+Administrators can create, list, filter, update, and delete rockets. Rockets include name, range, and capacity, and the API validates uniqueness, allowed ranges, and seat limits.
 - **Status**: Implemented
 
-### FR2: Launch Scheduling and Management
-Administrators can schedule launches for specific rockets with configurable pricing, scheduled dates, and minimum passenger thresholds. The system validates that minimum passengers don't exceed rocket capacity, scheduled dates are in the future, and prices are positive. Launch status transitions through a lifecycle (scheduled → active → completed/cancelled) with automatic availability calculation based on rocket capacity minus booked seats.
+### FR2: Launch Scheduling and Availability
+Administrators can create, list, update, and delete launches linked to rockets. Launches store scheduled date, price, minimum passengers, and status. API responses include derived availability based on rocket capacity and current bookings.
 - **Status**: Implemented
 
 ### FR3: Customer Registration and Profile Management
-Customers are identified by unique email addresses and maintain profiles with name and phone number. The system validates email uniqueness and format, stores customer contact information, and allows profile updates. Multiple bookings per customer are supported with full booking history tracking.
+The system can create, retrieve, list, update, and delete customers. Customers are identified by unique email addresses, and email cannot be changed after creation.
 - **Status**: Implemented
 
-### FR4: Seat Booking and Reservation
-Customers can book single or multiple seats on scheduled launches based on available inventory. The system validates seat availability in real-time, prevents overbooking beyond rocket capacity, calculates total booking cost based on seat quantity and launch pricing, and confirms bookings atomically or rolls back on failure.
+### FR4: Booking Creation and Capacity Enforcement
+The system can create bookings for existing customers on active launches, calculate total price from seat count and launch price, reject invalid seat counts, and prevent overbooking.
 - **Status**: Implemented
 
-### FR5: Payment Processing
-Customers are billed upon successful booking through a mock payment gateway. The system generates payment records with booking references, processes payments with success/failure handling, and prevents booking confirmation until payment succeeds. Payment status is tracked for each booking transaction.
+### FR5: Booking Retrieval and Availability Checks
+The system can retrieve a booking by ID, list bookings by launch, list bookings by customer email, and expose launch availability for seat checks.
+- **Status**: Implemented
+
+### FR6: Booking Cancellation and Seat Release
+The system should allow an existing booking to be cancelled while preserving booking history and releasing seats back to launch availability. Refund processing is not part of this requirement.
 - **Status**: NotStarted
 
-### FR6: Launch Status Lifecycle Management
-Launches progress through defined status transitions: scheduled (initial creation), active (accepting bookings), completed (launch executed successfully), suspended (temporarily unavailable), or cancelled (permanently stopped). Status changes are validated according to business rules and trigger appropriate notifications through the logging system.
-- **Status**: InProgress
+### FR7: Payment Processing
+The system should support mock payment processing for existing bookings, updating booking payment status from pending to completed or failed. Real payment gateways and financial reconciliation are out of scope.
+- **Status**: NotStarted
+
+### FR8: Launch Lifecycle Guards
+The system should enforce valid launch status transitions between scheduled, active, completed, and cancelled, rejecting invalid lifecycle changes instead of accepting arbitrary status updates.
+- **Status**: NotStarted
 
 ## Technical Requirements
 
-### TR1: RESTful API Architecture with Express.js
-The system is built as a stateless RESTful API using Express.js 4.21 on Node.js 22 with TypeScript 5.6. All endpoints follow REST conventions (GET, POST, PUT, DELETE) with appropriate HTTP status codes (200, 201, 400, 404, 500), return JSON responses with consistent error formats including field-level validation details, and use type-safe implementations for request/response handling.
+### TR1: Express and TypeScript REST API
+The product is implemented as a stateless JSON REST API using Express 4.21 on Node.js 22 with TypeScript 5.6. The API exposes health, rocket, launch, customer, and booking endpoints with standard HTTP status codes.
 - **Status**: Implemented
 
-### TR2: In-Memory Data Storage
-The system uses in-memory data stores for rockets, launches, customers, and bookings without database persistence. This approach is suitable for demonstration and training purposes. Data structures use TypeScript types for compile-time safety and support CRUD operations with filtering and pagination capabilities.
+### TR2: In-Memory Domain Storage and Derived Read Models
+The system stores rockets, launches, customers, and bookings in process memory. Availability and enriched booking responses are derived at read time rather than persisted separately.
 - **Status**: Implemented
 
-### TR3: Comprehensive Validation and Error Handling
-All user inputs are validated with custom validation utilities that check data types, ranges, and business rules. The system uses custom error classes (AppError, ValidationError) for structured error responses, returns field-level validation errors with descriptive messages, and logs all errors with appropriate severity levels (info, warn, error, debug).
+### TR3: Validation, Error Handling, and Logging
+The API validates request payloads and business rules, returns structured JSON errors with field-level details, and emits leveled console logs for operational visibility.
 - **Status**: Implemented
 
-### TR4: Observable Operations with Leveled Logging
-The system implements structured logging with configurable log levels (info, warn, error, debug) controlled via LOG_LEVEL environment variable. All operations log significant events including entity creation, updates, deletions, validation failures, and system errors. Logs include ISO timestamps and contextual information for debugging and monitoring.
-- **Status**: Implemented
-
-### TR5: Automated Testing with Playwright and Vitest
-End-to-end acceptance tests validate all acceptance criteria using Playwright 1.58. Tests cover happy paths, validation errors, edge cases, and business rule enforcement. The test suite validates HTTP endpoints, response formats, status codes, and error messages with comprehensive assertions for data integrity. Unit tests validate business logic in services and utilities using Vitest with mocked dependencies for isolated testing.
+### TR4: Automated API and Unit Test Coverage
+The product includes Playwright end-to-end tests for API behavior and Vitest unit tests for services, repositories, and utilities.
 - **Status**: Implemented

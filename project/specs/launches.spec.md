@@ -10,24 +10,24 @@
 
 ## Solution Overview
 
-Implement a launches management system as REST endpoints that:
-- Create launches linked to specific rockets with price, date, and minimum passenger thresholds
-- Retrieve launch details including seat availability and pricing information
-- Validate launch creation against rocket capacity to prevent overselling
-- Track launch status lifecycle (scheduled, active, completed, cancelled)
-- Return comprehensive launch data with associated rocket information
+Implement a launch management API that:
+- Creates launches linked to specific rockets with price, date, minimum passenger thresholds, and status
+- Retrieves launch details including derived availability and rocket information
+- Updates and deletes launches through the same domain model
+- Validates launch creation against rocket capacity and scheduling rules
+- Exposes current availability for booking workflows
 
 ## Acceptance Criteria
 
-- [ ] When creating a launch, system SHALL validate that minimum_passengers is at least 1
-- [ ] When creating a launch, system SHALL validate that the launch date is in the future
-- [ ] When creating a launch, system SHALL validate that price is greater than 0
-- [ ] When creating a launch, system SHALL validate that minimum_passengers does not exceed the rocket's total_seats capacity
-- [ ] When creating a launch, system SHALL validate that the rocket exists before allowing launch creation
-- [ ] When retrieving a launch, system SHALL return launch details including rocket information and available_seats calculation
-- [ ] When retrieving a launch, system SHALL calculate available_seats as (rocket.total_seats - booked_passengers)
-- [ ] When retrieving all launches, system SHALL return a list of launches with current seat availability and pricing
-- [ ] When creating a launch, system SHALL return a 400 error with descriptive message if validation fails
+- [ ] WHEN a client creates a launch THE SYSTEM SHALL validate that `minimumPassengers` is at least 1.
+- [ ] WHEN a client creates a launch THE SYSTEM SHALL validate that `scheduledDate` is in the future.
+- [ ] WHEN a client creates a launch THE SYSTEM SHALL validate that `price` is greater than 0.
+- [ ] WHEN a client creates a launch THE SYSTEM SHALL validate that `minimumPassengers` does not exceed the selected rocket capacity.
+- [ ] WHEN a client creates a launch THE SYSTEM SHALL validate that the referenced rocket exists.
+- [ ] WHEN a client retrieves a launch THE SYSTEM SHALL return rocket name, total seats, booked seats, and available seats.
+- [ ] WHEN a client retrieves all launches THE SYSTEM SHALL return each launch with its current availability view.
+- [ ] WHEN a client updates a launch THE SYSTEM SHALL return the updated launch with current availability data.
+- [ ] IF launch validation fails THEN THE SYSTEM SHALL return HTTP 400 with descriptive error details.
 
 ## Technical Details
 
@@ -41,25 +41,36 @@ type Launch = {
   minimumPassengers: number;
   status: 'scheduled' | 'active' | 'completed' | 'cancelled';
   createdAt: Date;
+  updatedAt: Date;
 };
 ```
 
 ### Endpoints
 
-**POST /launches** - Create a new launch
+**POST /api/launches** - Create a new launch
 - Input: rocketId, scheduledDate, price, minimumPassengers
 - Validation: rocket exists, capacity check, date validation
 - Response: Created launch with calculated fields
 
-**GET /launches/:id** - Get launch details
-- Response: Launch with rocket info and available_seats
+**GET /api/launches/:id** - Get launch details
+- Response: Launch with `rocketName`, `totalSeats`, `bookedSeats`, and `availableSeats`
 
-**GET /launches** - List all launches
+**GET /api/launches** - List all launches
 - Response: Array of launches with availability
+
+**PUT /api/launches/:id** - Update an existing launch
+- Response: Updated launch with availability
+
+**DELETE /api/launches/:id** - Delete a launch
+- Response: HTTP 204 on success
+
+**GET /api/launches/:launchId/availability** - Retrieve availability summary
+- Response: Launch ID with total seats, booked seats, and available seats
 
 ### Dependencies
 - Rocket service for capacity validation
-- In-memory launch store (no persistence)
+- Booking service for derived availability
+- In-memory launch store and repository
 
 ---
 

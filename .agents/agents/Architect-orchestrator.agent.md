@@ -10,6 +10,7 @@ handoffs:
     agent: Builder
     prompt: Build the first spec based on the synthesized architecture and backlog summary. Focus on the most independent and high-priority item to start.
     send: false
+user-invocable: true
 ---
 # Architect
 

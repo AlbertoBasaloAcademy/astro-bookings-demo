@@ -1,52 +1,79 @@
-# AstroBookings 
+# AstroBookings
 
-A **backend API** for offering bookings for rocket launches.
+AstroBookings is a backend API for managing rockets, launches, customers, and seat bookings for demo space travel operations.
 
-- Rockets have limited seats; launch requests are validated against rocket capacity.
+## Current Scope
 
-- Launches are scheduled for specific rockets, with pricing and minimum passenger thresholds.
+- Rockets have limited capacity and support filtering and pagination.
+- Launches are scheduled for specific rockets with pricing, minimum passenger thresholds, and status.
+- Customers are identified by unique email and store name and phone details.
+- Bookings reserve seats on active launches and update derived availability.
+- Payment status exists on bookings as a placeholder field, but payment execution is not implemented.
 
-- Launch status lifecycle: scheduled → confirmed → successful, or cancellation/suspension paths.
+## Implemented Features
 
-- A customer is identified by their email address and has a name and phone number.
+### Rocket Management
+- Create, read, update, and delete rockets.
+- Filter rockets by range and minimum capacity.
+- Return paginated rocket listings.
 
-- One customer can book multiple seats on a launch but cannot exceed the available seats.
+### Launch Management
+- Create, read, update, and delete launches.
+- Validate future dates, positive price, and capacity constraints.
+- Return launch responses with `rocketName`, `totalSeats`, `bookedSeats`, and `availableSeats`.
 
-- Customers are billed upon booking, and payments are processed through a mock gateway.
+### Customer Management
+- Create, read, update, delete, and list customers.
+- Enforce unique email identity.
+- Reject email changes after creation.
 
-## Features
+### Booking Management
+- Create bookings for existing customers on active launches.
+- Retrieve bookings by ID, by launch, and by customer email.
+- Calculate total booking cost from seat count and launch price.
+- Reject overbooking based on derived seat availability.
 
-### Rocket Management API
-- Create, read, update, and delete rockets
-- Filter rockets by range (suborbital, orbital, moon, mars)
-- Filter rockets by minimum capacity (1-10 passengers)
-- Paginated rocket listings
-- Full data validation and error handling
+## Planned Backlog
+
+- Booking cancellation and seat release.
+- Mock payment processing for bookings.
+- Launch lifecycle transition guards.
+- Authentication and persistent storage remain out of scope for the current demo phase.
+
+## API Surface
+
+- `GET /health`
+- `GET|POST|PUT|DELETE /api/rockets`
+- `GET|POST|PUT|DELETE /api/launches`
+- `GET /api/launches/:launchId/availability`
+- `GET|POST|PUT|DELETE /api/customers`
+- `POST /api/bookings`
+- `GET /api/bookings/:id`
+- `GET /api/bookings/launch/:launchId`
+- `GET /api/bookings/customer/:email`
+
+## Development
+
+```bash
+npm install
+npm run build
+npm run dev
+npm test
+npm run test:unit
+```
 
 ## Logging
 
-- Logs are written to stdout/stderr with timestamped level tags.
-- Default log level is `info`. Set `LOG_LEVEL=debug` to enable debug output.
+- Logs are written to stdout and stderr with timestamped level tags.
+- Default log level is `info`.
+- Set `LOG_LEVEL=debug` to enable debug logs.
 
-### Manual check
-
-1. Start the API with `LOG_LEVEL=debug`.
-2. Create a rocket via `POST /api/rockets`.
-3. Verify a debug log entry like `Rocket created` appears in the console.
+## Notes
 
 > [!WARNING]
-> AstroBookings is a fictional space travel company.
-> The system is designed for demonstration and training purposes. 
-> Not for production use; no security or database is required at the initial stage.
-
----
+> AstroBookings is a fictional training project.
+> It is intentionally in-memory, unauthenticated, and not designed for production use.
 
 - [Repository at GitHub](https://github.com/AlbertoBasaloAcademy/astro-bookings-demo)
 - Default branch: `main`
-
 - **Author**: [Alberto Basalo](https://albertobasalo.dev)
-- **Ai Code Academy en Español**: [AI code Academy](https://aicode.academy)
-- **Socials**:
-  - [X](https://x.com/albertobasalo)
-  - [LinkedIn](https://www.linkedin.com/in/albertobasalo/)
-  - [GitHub](https://github.com/albertobasalo)

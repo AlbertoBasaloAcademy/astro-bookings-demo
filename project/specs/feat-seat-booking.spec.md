@@ -4,7 +4,7 @@
 
 ## Problem Description
 
-Currently, the AstroBookings system manages rockets and launches but lacks the core functionality for customers to reserve seats on scheduled flights. Without a booking system, customers cannot complete space travel reservations, and administrators cannot track which seats are available or sold for each launch. The system needs to provide real-time seat availability validation, prevent overbooking, calculate booking costs accurately, and ensure booking integrity through atomic operations.
+AstroBookings needed a booking flow that lets customers reserve seats on scheduled launches while keeping availability accurate and preventing overbooking. The released feature provides seat validation, total price calculation, booking lookup, customer booking history, and launch availability checks.
 
 ### User Stories
 
@@ -16,22 +16,23 @@ Currently, the AstroBookings system manages rockets and launches but lacks the c
 
 ### User/App interface
 
-- **POST /launches/{launchId}/bookings** - Create a booking with customer email, number of seats, and optional payment details
-- **GET /launches/{launchId}/bookings/{bookingId}** - Retrieve booking confirmation details
-- **GET /customers/{email}/bookings** - List all bookings for a customer with status and details
-- **GET /launches/{launchId}/availability** - Check remaining available seats for a launch
+- **POST /api/bookings** - Create a booking with launch ID, customer email, and seat count
+- **GET /api/bookings/:id** - Retrieve booking details by booking ID
+- **GET /api/bookings/launch/:launchId** - List bookings for a launch
+- **GET /api/bookings/customer/:email** - List bookings for a customer email
+- **GET /api/launches/:launchId/availability** - Check remaining available seats for a launch
 
 ### Model and logic
 
 - **Booking entity** with:
   - Unique booking ID
-  - Reference to customer (email)
+  - Reference to customer (customer ID with email lookup at input time)
   - Reference to launch (launch ID)
   - Number of seats booked
   - Total cost (seats × launch price)
   - Booking status (pending, confirmed, cancelled)
-  - Booking timestamp
   - Payment status (pending, completed, failed)
+  - Created and updated timestamps
 
 - **Business rules**:
   - Total booked seats for a launch cannot exceed rocket capacity
@@ -40,23 +41,23 @@ Currently, the AstroBookings system manages rockets and launches but lacks the c
   - Same customer can book multiple times on same launch (up to capacity)
   - Booking cost = seat quantity × launch price
   - Bookings are atomic: all seats reserved or entire operation fails
-  - Bookings can only be made on launches in "active" status
+  - Bookings can only be made on launches in `active` status
 
 ### Persistence
 
 - Bookings stored in in-memory `bookingStore`
 - Booking repository provides CRUD operations
-- Launch availability calculated dynamically: `rocket.capacity - totalBookedSeats`
-- Customer booking history retrieved from store filtered by customer email
+- Launch availability calculated dynamically from rocket capacity minus non-cancelled booked seats
+- Booking responses are enriched with customer email, rocket name, and launch price
 
 ## Acceptance Criteria
 
-- [ ] WHEN THE customer provides a valid launch ID, seat quantity, and email THEN THE SYSTEM SHALL create a booking with confirmation ID and return HTTP 201.
+- [ ] WHEN a client submits a valid launch ID, seat count, and customer email THEN THE SYSTEM SHALL create a booking and return HTTP 201.
 - [ ] WHEN THE booking request includes seat quantity exceeding available capacity THEN THE SYSTEM SHALL return HTTP 400 with error message "Insufficient seats available".
 - [ ] WHEN THE booking request is for a launch not in "active" status THEN THE SYSTEM SHALL return HTTP 400 with error message "Launch is not available for booking".
 - [ ] WHERE THE booking is created THE SYSTEM SHALL calculate total cost as seat quantity multiplied by launch price.
 - [ ] WHERE THE booking is successful THE SYSTEM SHALL update launch availability immediately and prevent concurrent overbooking.
-- [ ] WHEN THE customer requests booking history by email THEN THE SYSTEM SHALL return all bookings for that customer with complete details including status and cost.
+- [ ] WHEN THE customer requests booking history by email THEN THE SYSTEM SHALL return all bookings for that customer with complete details including status, total price, and payment status.
 - [ ] WHEN THE booking request includes invalid customer email format THEN THE SYSTEM SHALL return HTTP 400 with validation error message.
-- [ ] WHEN THE booking is created THE SYSTEM SHALL initialize payment status as "pending" and await payment processing.
+- [ ] WHEN THE booking is created THE SYSTEM SHALL initialize payment status as "pending".
 - [ ] IF THE total booked seats plus new booking exceeds rocket capacity THEN THE SYSTEM SHALL rollback the booking and return HTTP 400.

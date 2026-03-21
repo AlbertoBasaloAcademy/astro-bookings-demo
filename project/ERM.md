@@ -3,78 +3,82 @@
 ## Entities
 
 ### Rocket
-- **id**: string (UUID)
-- **name**: string (unique)
-- **range**: string (suborbital | orbital | moon | mars)
-- **totalSeats**: number (1-10)
-- **createdAt**: Date
-
-**Rules:**
-- Name must be unique across all rockets
-- Total seats must be between 1 and 10
-- Range must be one of the predefined values
-
-### Launch
-- **id**: string (UUID)
-- **rocketId**: string (Foreign Key → Rocket)
-- **scheduledDate**: Date
-- **price**: number (> 0)
-- **minimumPassengers**: number (≥ 1)
-- **status**: string (scheduled | active | completed | suspended | cancelled)
-- **createdAt**: Date
-
-**Rules:**
-- Scheduled date must be in the future
-- Price must be positive
-- Minimum passengers must not exceed rocket's total seats
-- Status transitions follow defined lifecycle
-
-### Customer
-- **id**: string (UUID)
-- **email**: string (unique, valid email format)
-- **name**: string (2-100 characters)
-- **phone**: string (international format, 8-20 characters)
+- **id**: string
+- **name**: string, unique
+- **range**: suborbital | orbital | moon | mars
+- **capacity**: number, 1..10
 - **createdAt**: Date
 - **updatedAt**: Date
 
 **Rules:**
-- Email must be unique across all customers
-- Email must follow valid format and is immutable
-- Name must be non-empty and properly formatted
-- Phone must follow international format
-- Timestamps automatically managed
+- Name must be unique across all rockets.
+- Capacity must be between 1 and 10.
+- Range must be one of the supported values.
 
-### Booking
-- **id**: string (UUID)
-- **launchId**: string (Foreign Key → Launch)
-- **customerId**: string (Foreign Key → Customer)
-- **seatCount**: number (≥ 1)
-- **totalPrice**: number
-- **status**: string (pending | confirmed | cancelled)
+### Launch
+- **id**: string
+- **rocketId**: string, foreign key to Rocket
+- **scheduledDate**: Date
+- **price**: number, greater than 0
+- **minimumPassengers**: number, at least 1 and not greater than rocket capacity
+- **status**: scheduled | active | completed | cancelled
 - **createdAt**: Date
+- **updatedAt**: Date
 
 **Rules:**
-- Seat count must be at least 1
-- Total price calculated from launch price × seat count
-- Cannot exceed available seats on launch
-- Status reflects booking lifecycle
+- Scheduled date must be in the future at creation time.
+- Price must be positive.
+- Minimum passengers must not exceed the selected rocket capacity.
+- Launch status is stored directly; strict transition guards are backlog work.
+
+### Customer
+- **id**: string
+- **name**: string
+- **email**: string, unique
+- **phone**: string
+- **createdAt**: Date
+- **updatedAt**: Date
+
+**Rules:**
+- Email must be unique and valid.
+- Email is immutable after creation.
+- Customer lookups normalize email for uniqueness and retrieval.
+
+### Booking
+- **id**: string
+- **launchId**: string, foreign key to Launch
+- **customerId**: string, foreign key to Customer
+- **seatCount**: number, at least 1
+- **totalPrice**: number
+- **status**: pending | confirmed | cancelled
+- **paymentStatus**: pending | completed | failed
+- **createdAt**: Date
+- **updatedAt**: Date
+
+**Rules:**
+- Seat count must be at least 1.
+- Total price is calculated when the booking is created.
+- Booking is allowed only on active launches.
+- Overbooking is rejected based on derived availability.
+- Cancelled bookings are excluded from seat-consumption totals.
 
 ## Relationships
 
 ```mermaid
 erDiagram
-    ROCKET ||--o{ LAUNCH : "has"
-    LAUNCH ||--o{ BOOKING : "has"
-    CUSTOMER ||--o{ BOOKING : "makes"
-    
+    ROCKET ||--o{ LAUNCH : has
+    LAUNCH ||--o{ BOOKING : has
+    CUSTOMER ||--o{ BOOKING : makes
+
     ROCKET {
         string id PK
         string name UK
         string range
-        number totalSeats
+        number capacity
         date createdAt
+        date updatedAt
     }
-    
+
     LAUNCH {
         string id PK
         string rocketId FK
@@ -83,17 +87,18 @@ erDiagram
         number minimumPassengers
         string status
         date createdAt
+        date updatedAt
     }
-    
+
     CUSTOMER {
         string id PK
-        string email UK
         string name
+        string email UK
         string phone
         date createdAt
         date updatedAt
     }
-    
+
     BOOKING {
         string id PK
         string launchId FK
@@ -101,26 +106,41 @@ erDiagram
         number seatCount
         number totalPrice
         string status
+        string paymentStatus
         date createdAt
+        date updatedAt
     }
 ```
 
+## Derived API Read Models
+
+These fields appear in API responses but are not stored as standalone entity attributes:
+
+### Launch Availability Response
+- **rocketName**: string
+- **totalSeats**: number
+- **bookedSeats**: number
+- **availableSeats**: number
+
+### Enriched Booking Response
+- **customerEmail**: string
+- **rocketName**: string
+- **launchPrice**: number
+
 ## Implementation Notes
 
-**Phase 1 - Completed:**
-- Rocket entity with CRUD operations
-- Launch entity with CRUD operations and lifecycle management
+**Implemented:**
+- Rocket, launch, customer, and booking entities are all active in the current codebase.
+- Availability is derived from rocket capacity and non-cancelled booking totals.
+- `paymentStatus` already exists on bookings as a state field.
 
-**Phase 2 - Completed:**
-- Customer entity with registration and profile management
-
-**Phase 3 - In Progress:**
-- Booking entity with seat reservation and real-time availability tracking
-- Payment status tracking (pending | completed | failed)
+**Not Yet Implemented:**
+- A separate Payment entity.
+- Refund workflows.
+- Strict launch lifecycle transition enforcement.
 
 **Data Integrity Constraints:**
-- Foreign keys link launches to rockets and bookings to launches/customers
-- Email and name uniqueness constraints on Customer
-- Rocket name uniqueness constraint
-- Status transitions validated at service layer
-- Availability calculations derived from capacity minus booked seats
+- Launches reference rockets.
+- Bookings reference launches and customers.
+- Customer email and rocket name must stay unique.
+- Availability is derived, not stored as a separate entity.
