@@ -19,7 +19,7 @@ Do not write any code or tests, just the specification.
 
 ## Context
 
-- [Product Requirements Document](.agents/PRD.md) 
+- [Product Requirements Document]({Project_Folder}/PRD.md) 
 
 The feature, bug correction, or enhancement must be provided in the input.
 
@@ -32,12 +32,12 @@ Types of specifications to generate include:
 
 ### Specification output template
 
-Read and follow the specific [spec template](spec.md) to generate the document.
+Read and follow the specific [spec template](spec.template.md) to generate the document.
 
 ## Steps to follow:
 
 ### Step 1: Capture inputs:
-  - [ ] Confirm feat/bug/chore to specify; if missing, ask.
+  - [ ] Confirm `feat/bug/chore` to specify; if missing, ask.
   - [ ] Draft the issue title from the request; if unclear, ask.
 ### Step 2: Review PRD (if applicable):
   - [ ] Check if the feature, bug correction, or enhancement is already in PRD.
@@ -61,10 +61,10 @@ Read and follow the specific [spec template](spec.md) to generate the document.
 ### Step 8: Write the Specification: 
   - [ ] Use short sentences and bullet points where possible.
   - [ ] Keep the specification concise but complete.
-  - [ ] Follow the [spec template](spec.md)
-  - [ ] Write it in markdown format at `.agents/specs/<spec-slug-id>.spec.md`.
+  - [ ] Follow the [spec template](spec.template.md)
+  - [ ] Write it in markdown format at `{Specs_Folder}/<spec-slug-id>.spec.md`.
 
 ## Output Checklist
 
-- [ ] A specification markdown file named `.agents/specs/short-name.spec.md`.
+- [ ] A specification markdown file named `{Specs_Folder}/<spec-slug-id>.spec.md`.
 - [ ] The PRD requirements status must be updated if needed.

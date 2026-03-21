@@ -14,7 +14,10 @@ You can be working on either a greenfield or brownfield project.
 
 Starting a new project from scratch.
 
-Use the provided project idea, briefing document or README.md file.
+Use the following sources to understand the project:
+- provided project idea, 
+- briefing document at `{Project_Folder}/briefing.md`, 
+- read me `{Root_Folder}/README.md` file.
 
 ### Brownfield scenario
 
@@ -22,16 +25,19 @@ Working on a legacy or existing project.
 
 Use the current project files to analyze the existing product.
 Pay special attention to:
-  - README.md
-  - CHANGELOG.md
-  - docs folder
+  - `{Root_Folder}/README.md`
+  - `{Root_Folder}/CHANGELOG.md`
+  - `{Root_Folder}/docs` folder
   - Existing specs or documentation files
-  - Previous agents documents AGENTS.md, PRD.md, ADD.md, etc.
+  - Previous agents documents:
+    - `{Root_Folder}/AGENTS.md`, 
+    - `{Project_Folder}/PRD.md`, 
+    - `{Project_Folder}/ADD.md`, etc.
   - Any documentation in the codebase
 
 ### PRD output template
 
-Read and follow any specific [PRD template](PRD.md) to generate the document.
+Read and follow any specific [PRD template](PRD.template.md) to generate the document.
 
 ## Steps to follow:
 
@@ -47,7 +53,7 @@ Read and follow any specific [PRD template](PRD.md) to generate the document.
 
 ### Step 2: Drafting the PRD
 
-- [ ] Draft the PRD following the [PRD template](PRD.md)
+- [ ] Draft the PRD following the [PRD template](PRD.template.md)
   - Do not write more than necessary, keep it concise and to the point.
   - Specifically cover:
     - Between 3 and 9 Functional Requirements (less is better)
@@ -60,8 +66,8 @@ Read and follow any specific [PRD template](PRD.md) to generate the document.
 - [ ] On brownfield projects, update PRD feature status.
   - Mark existing features as Implemented.
   - New features should be marked as NotStarted. 
-- [ ] Write the final PRD at `.agents/PRD.md`.
+- [ ] Write the final PRD at `{Project_Folder}/PRD.md`.
 
 ## Output Checklist
 
-- [ ] A comprehensive P.R.D. at `.agents/PRD.md`.
+- [ ] A comprehensive P.R.D. at `{Project_Folder}/PRD.md`.

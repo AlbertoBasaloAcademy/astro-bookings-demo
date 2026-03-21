@@ -1,17 +1,16 @@
 ---
 name: resolve-issue
-description: Resolves an issue by committing pending changes.
-argument-hint: Provide the issue number to start coding.
+description: Resuelve una incidencia confirmando los cambios pendientes.
+argument-hint: Proporciona el número de issue para empezar a programar.
 agent: Coder
 ---
-# Resolve Issue
+# Resolver issue
 
-## Task
+## Tarea
 
-Resolve the specified issue.
+Resolver la issue indicada programando la solución.
 
-## Context
+## Contexto
 
-If no issue number is provided, ask for it.
-
+Si no se proporciona número de issue, usa la primera issue abierta del repositorio.
 

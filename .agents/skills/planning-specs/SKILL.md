@@ -11,8 +11,8 @@ The plan will be a set of ordered steps, each with specific tasks to complete.
 
 ## Context
 
-- [The Specification file](.agents/specs/?short-name.spec.md)
-- [Architectural Design Document](.agents/ADD.md)
+- [The Specification file]({Specs_Folder}/<spec-slug-id>.spec.md)
+- [Architectural Design Document]({Project_Folder}/ADD.md)
 
 ## Steps to follow:
 
@@ -27,13 +27,13 @@ The plan will be a set of ordered steps, each with specific tasks to complete.
  - [ ] For each step, list specific tasks (<= 5) needed to complete it.
  - [ ] Ensure tasks are clear and actionable.
 ### Step 4: Write the implementation plan.
- - [ ] Follow the format in the [Implementation Plan template](./PLAN.md).
- - [ ] Write the plan to a markdown file at `.agents/short-name.plan.md`.
+ - [ ] Follow the format in the [Implementation Plan template](PLAN.template.md).
+ - [ ] Write the plan to a markdown file at `{Plans_Folder}/<plan-slug-id>.plan.md`.
 ### Step 5: Review and finalize the plan.
  - [ ] Ensure the plan is comprehensive and feasible.
  - [ ] Mark the specification status as "Planned" at the top of the spec file.
 
 ## Output Checklist
 
-- [ ] A detailed implementation plan at `.agents/short-name.plan.md`.
+- [ ] A detailed implementation plan at `{Plans_Folder}/<plan-slug-id>.plan.md`.
 - [ ] The specification status updated to "Planned" in the spec file.

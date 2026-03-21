@@ -1,6 +1,6 @@
 # Short name Specification
 - **Type**: {feat/bug/chore}
-- **Status**: Draft{Draft, Planned, Coded, Verified, Released} 
+- **Status**: Draft{Draft, Planned, Coded, Verified }
 
 ## Problem Description
 
