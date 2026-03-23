@@ -27,7 +27,7 @@ Coordinate the current worker pipeline to move from specification to released im
 
 - [ ] Clarify if there is a specification to build
   - [ ] Check the PRD and the current specs folder for any relevant specification files that are incomplete.
-  - [ ] If not, create one by running the `generate-spec` skill with the user provided context.
+  - [ ] If not, create one by running the `generate-specs` skill with the user provided context.
   
 ### Step 2: Execute the implementation pipeline
 - [ ] Run #tool:agent/runSubagent `4-engineer` to prepare the environment and produce or refine the implementation plan.
