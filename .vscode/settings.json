@@ -27,7 +27,7 @@
     "prompts": "prompts",
     "skills": "prompts",
   },
-  "workbench.preferredDarkColorTheme": "Default Dark Modern",
-  "workbench.preferredLightColorTheme": "Default Dark Modern",
+  "workbench.preferredDarkColorTheme": "Dark Modern",
+  "workbench.preferredLightColorTheme": "Dark Modern",
   "window.zoomLevel": 1
 }
